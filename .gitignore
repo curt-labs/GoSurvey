@@ -21,3 +21,8 @@ _testmain.go
 
 *.exe
 *.test
+
+.sass-cache
+node_modules
+watcher.go
+index
