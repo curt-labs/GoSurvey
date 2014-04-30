@@ -26,3 +26,5 @@ _testmain.go
 node_modules
 watcher.go
 index
+*.log
+public/js/vendor
