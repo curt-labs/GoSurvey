@@ -1,0 +1,61 @@
+// Globals
+$dark-color: #222222;
+
+// Bootstrap Overrides
+$border-radius-base:0;
+$navbar-height: 70px;
+$jumbotron-bg: $dark-color;
+$jumbotron-color: #ffffff;
+$navbar-inverse-link-active-bg: $dark-color;
+
+@import "../js/vendor/bootstrap-sass-official/vendor/assets/stylesheets/bootstrap.scss";
+
+.navbar{
+	.container{
+		margin:auto;
+
+		.navbar-brand {
+			padding: 17.5px 15px;
+			img{
+				width: 330px;
+			}
+		}
+	}
+}
+
+.home-header{
+	background: url(/imgs/jumbotron-bg.jpg) no-repeat left bottom fixed;
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
+	height: 735px;
+	margin:0;
+
+	.jumbotron{
+		background:none;
+		h1,p{
+			font-weight:300px;
+			line-height:1.4em;
+			float: left;
+			margin:0;
+			padding:5px 15px;
+			background:rgba(0,0,0,0.7);
+
+			a{
+				margin: 10px 0;
+			}
+		}
+	}
+}
+
+// Main View
+.data-view{
+	padding: 50px 10px;
+}
+
+footer{
+	clear:both;
+	background:$dark-color;
+	min-height:200px;
+}

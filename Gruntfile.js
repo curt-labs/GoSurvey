@@ -63,7 +63,7 @@ module.exports = function(grunt){
 			dist:{
 				options: {
 					sassDir: '<%= appDir %>/sass',
-					cssDir: '<%= builtDir %>/css',
+					cssDir: '<%= appDir %>/css',
 					banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> - <%= pkg.author %> */\n',
 					specify: '<%= appDir %>/sass/*.scss',
 					imagesDir: 'public/imgs',
@@ -76,7 +76,7 @@ module.exports = function(grunt){
 			dev:{
 				options: {
 					sassDir: '<%= appDir %>/sass',
-					cssDir: '<%= builtDir %>/css',
+					cssDir: '<%= appDir %>/css',
 					banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> - <%= pkg.author %> */\n',
 					specify: '<%= appDir %>/sass/*.scss',
 					imagesDir: 'public/imgs',
@@ -102,7 +102,7 @@ module.exports = function(grunt){
 				}
 			},
 			compass:{
-				files: '<%= appDir %>/sass/.*scss',
+				files: '<%= appDir %>/sass/*.scss',
 				tasks: ['compass:dev'],
 				options:{
 					spawn:false

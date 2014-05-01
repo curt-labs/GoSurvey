@@ -6,6 +6,7 @@ import (
 	"github.com/curt-labs/GoSurvey/models/warranties"
 	"github.com/go-martini/martini"
 	"github.com/martini-contrib/binding"
+	"github.com/martini-contrib/gzip"
 	"github.com/martini-contrib/logstasher"
 	"github.com/martini-contrib/render"
 	"github.com/mipearson/rfw"
@@ -22,6 +23,7 @@ var (
 func main() {
 	flag.Parse()
 	m := martini.Classic()
+	m.Use(gzip.All())
 	m.Use(martini.Static("public"))
 	m.Use(render.Renderer(render.Options{
 		Directory:       "views",
@@ -46,6 +48,13 @@ func main() {
 		r.Get("/:id", warranty.Get)
 		r.Put("", binding.Bind(warranties.Warranty{}), warranty.Add)
 		r.Delete("/:id", warranty.Delete)
+	})
+
+	m.Get("/warranty", func(r render.Render) {
+		r.Redirect("/#/warranty")
+	})
+	m.Get("", func(r render.Render) {
+		r.HTML(200, "index", nil)
 	})
 
 	log.Printf("Starting server on 127.0.0.1:%s\n", *listenAddr)

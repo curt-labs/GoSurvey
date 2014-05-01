@@ -13,9 +13,15 @@
     "tests"
   ],
   "dependencies": {
-    "bootstrap": "~3.1.1",
     "requirejs": "~2.1.11",
-    "requirejs-domready": "~2.0.1",
-    "sass-bootstrap": "~3.0.2"
+    "requirejs-domready": "latest",
+    "requirejs-text":"=2.0.10",
+    "requirejs-plugins":"=1.0.2",
+    "bootstrap-sass-official": "~3.1.1",
+    "angular": "=1.2.16",
+    "angular-resource": "=1.2.16",
+    "angular-route":"=1.2.16",
+    "angular-mocks": "=1.2.16",
+    "jquery":"=1.11.0"
   }
 }
