@@ -1,6 +1,5 @@
 use CurtDev;
 
-
 DROP TABLE IF EXISTS ActivatedWarranties;
 CREATE TABLE `CurtDev`.`ActivatedWarranties` (
 	`id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -12,7 +11,6 @@ CREATE TABLE `CurtDev`.`ActivatedWarranties` (
 	PRIMARY KEY (`id`),
 	CONSTRAINT `Part_FK` FOREIGN KEY (`part`) REFERENCES `CurtDev`.`Part` (`partID`)
 ) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=`InnoDB` COMMENT='Warranty Activation';
-
 
 ##
 # Survey Data Structure
