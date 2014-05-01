@@ -28,3 +28,4 @@ watcher.go
 index
 *.log
 public/js/vendor
+requests.log
