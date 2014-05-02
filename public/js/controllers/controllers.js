@@ -1,14 +1,19 @@
 define([
 	'jquery',
+	'nprogress',
 	'routes/routes',
 	'controllers/AppController',
 	'controllers/HomeController',
-	'controllers/DataController'],
-	function($, routes, app, home, data){
+	'controllers/WarrantyController',
+	'controllers/SurveysController',
+	'controllers/SurveyController'],
+	function($, NProgress, routes, app, home, warranty, surveys, survey){
 
 		var controllers = {
 			home: home,
-			data: data
+			warranty: warranty,
+			surveys: surveys,
+			survey: survey
 		};
 
 		var setUpRoutes = function(angModule){
@@ -23,9 +28,11 @@ define([
 				$routeProvider.otherwise({ redirectTo: routes.home.route });
 			});
 			angModule.run(function($rootScope){
+				$rootScope.$on('$routeChangeStart',function(){
+					NProgress.start();
+				});
 				$rootScope.$on('$routeChangeSuccess', function(next, last){
-					console.log('Navigating from ', last);
-					console.log('Navigating to ', next);
+					NProgress.done();
 				});
 			});
 		};

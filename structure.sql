@@ -35,6 +35,7 @@ DROP TRIGGER IF EXISTS SurveyAnswers_Update;
 CREATE TABLE `CurtDev`.`Survey` (
 	`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 	`name` varchar(255),
+	`description` varchar(1000),
 	`date_added` datetime NOT NULL,
 	`date_modifed` timestamp NOT NULL ON UPDATE CURRENT_TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	`userID` int(11) NOT NULL,

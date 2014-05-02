@@ -1,7 +1,9 @@
 define([
 	'/js/vendor/requirejs-text/text.js!/js/views/home.html',
-	'/js/vendor/requirejs-text/text.js!/js/views/data.html'
-],function(homeTemplate,dataTemplate){
+	'/js/vendor/requirejs-text/text.js!/js/views/surveys/index.html',
+	'/js/vendor/requirejs-text/text.js!/js/views/surveys/survey.html',
+	'/js/vendor/requirejs-text/text.js!/js/views/warranty.html'
+],function(homeTemplate, surveysTemplate, surveyTemplate, warrantyTemplate){
 	return {
 		home: {
 			title: 'Home',
@@ -9,11 +11,23 @@ define([
 			controller: 'home',
 			template: homeTemplate
 		},
-		data: {
-			title: 'Data List',
-			route: '/data',
-			controller: 'data',
-			template: dataTemplate
+		warranty: {
+			title: 'Warranty',
+			route: '/warranty',
+			controller: 'warranty',
+			template: warrantyTemplate
+		},
+		surveys: {
+			title: 'Surveys',
+			route: '/surveys',
+			controller: 'surveys',
+			template: surveysTemplate
+		},
+		survey:{
+			title: 'Survey',
+			route: '/surveys/:id',
+			controller: 'survey',
+			template: surveyTemplate
 		}
 	};
 });

@@ -1,7 +1,11 @@
-define(['jquery'],function($){
+define([
+	'jquery',
+	'filters/truncate'],function($, truncate){
 	'use strict';
 
-	var filters = {};
+	var filters = {
+		truncate: truncate
+	};
 
 	var initialize = function(angModule){
 		$.each(filters, function(name, filter) {

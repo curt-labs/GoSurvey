@@ -11,6 +11,8 @@ require.config({
 		'html5shiv':'./vendor/html5shiv/dist/html5shiv.min',
 		'respondJS': './vendor/respondJS/dest/respond.min',
 		'bootstrap': './vendor/bootstrap/dist/js/bootstrap.min',
+		'nprogress':'./vendor/nprogress/nprogress',
+		'holder':'./vendor/holderjs/holder',
 		'templates':'./views'
 	},
 
@@ -35,6 +37,8 @@ require([
 	'angular',
 	'bootstrap',
 	'respondJS',
+	'nprogress',
+	'holder',
 	'html5shiv'], function(require, $, angular){
 		require(['app'],function(app){
 			app.initialize();

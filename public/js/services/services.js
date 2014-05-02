@@ -1,8 +1,9 @@
-define(['jquery','services/SurveyService'],function($,ss){
+define(['jquery', 'services/WarrantyService','services/SurveyService'],function($, ws,ss){
 	'use strict';
 
 	var services = {
-		SurveyService: ss
+		SurveyService: ss,
+		WarrantyService: ws
 	};
 
 	var initialize = function(angModule){

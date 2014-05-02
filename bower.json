@@ -25,6 +25,8 @@
     "angular-resource": "=1.2.16",
     "angular-route":"=1.2.16",
     "angular-mocks": "=1.2.16",
-    "jquery":"=1.11.0"
+    "jquery":"=1.11.0",
+    "nprogress":"=0.1.3",
+    "holderjs":"=2.3.2"
   }
 }

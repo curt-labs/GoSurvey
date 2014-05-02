@@ -11,22 +11,11 @@ module.exports = function(grunt){
 		requirejs:{
 			main:{
 				options:{
-					mainConfigFile: '<%= appDir %>/js/common.js',
 					appDir: '<%= appDir %>',
 					baseUrl: './js',
 					dir: '<%= builtDir %>',
 					optimizeCss: 'none', // will be taken care of with compass
-					optimize: 'none', // will be taken care of with an uglify task
-					modules:[
-						{
-							name: 'common',
-							include: ['jquery','domReady', 'bootstrap']
-						},
-						{
-							name:'app/homepage',
-							exclude: ['common']
-						}
-					]
+					optimize: 'none' // will be taken care of with an uglify task
 				}
 			}
 		},
