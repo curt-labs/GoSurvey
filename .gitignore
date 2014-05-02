@@ -27,5 +27,4 @@ node_modules
 watcher.go
 index
 *.log
-public/js/vendor
 requests.log
