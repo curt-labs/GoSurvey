@@ -1,6 +1,6 @@
 define([
-	'/js/vendor/requirejs-text/text.js!templates/home.html',
-	'/js/vendor/requirejs-text/text.js!templates/data.html'
+	'/js/vendor/requirejs-text/text.js!/js/views/home.html',
+	'/js/vendor/requirejs-text/text.js!/js/views/data.html'
 ],function(homeTemplate,dataTemplate){
 	return {
 		home: {
@@ -9,11 +9,11 @@ define([
 			controller: 'home',
 			template: homeTemplate
 		},
-		creation: {
+		data: {
 			title: 'Data List',
 			route: '/data',
 			controller: 'data',
 			template: dataTemplate
 		}
 	};
-})
+});

@@ -7,7 +7,7 @@ define(['jquery','services/SurveyService'],function($,ss){
 
 	var initialize = function(angModule){
 		$.each(services, function(name, service) {
-			 angModule.factory(name, service);
+			angModule.factory(name, service);
 		});
 	};
 

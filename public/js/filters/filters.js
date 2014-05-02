@@ -5,7 +5,7 @@ define(['jquery'],function($){
 
 	var initialize = function(angModule){
 		$.each(filters, function(name, filter) {
-			 angModule.filter(name, filter);
+			angModule.filter(name, filter);
 		});
 	};
 

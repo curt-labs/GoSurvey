@@ -6,4 +6,4 @@ define([],function(){
 	}];
 
 	return ctlr;
-})
+});

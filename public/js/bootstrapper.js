@@ -8,7 +8,9 @@ require.config({
 		'ngResource': './vendor/angular-resource/angular-resource.min',
 		'ngRoute': './vendor/angular-route/angular-route.min',
 		'jquery': './vendor/jquery/dist/jquery.min',
-		'bootstrap': './vendor/bootstrap-sass-official/vendor/assets/javascripts/bootstrap',
+		'html5shiv':'./vendor/html5shiv/dist/html5shiv.min',
+		'respondJS': './vendor/respondJS/dest/respond.min',
+		'bootstrap': './vendor/bootstrap/dist/js/bootstrap.min',
 		'templates':'./views'
 	},
 
@@ -31,7 +33,9 @@ require([
 	'require',
 	'jquery',
 	'angular',
-	'bootstrap'], function(require, $, angular){
+	'bootstrap',
+	'respondJS',
+	'html5shiv'], function(require, $, angular){
 		require(['app'],function(app){
 			app.initialize();
 		});

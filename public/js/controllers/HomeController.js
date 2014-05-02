@@ -1,11 +1,10 @@
 define([],function(){
 	'use strict';
-
-	var ctrl = function($scope){
+	var ctlr = function($scope){
 
 	};
 
 	ctlr.$inject = [];
 
 	return ctlr;
-})
+});

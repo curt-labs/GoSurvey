@@ -7,5 +7,5 @@ define([], function () {
 		});
 	}];
 
- 	return service;
+	return service;
 });

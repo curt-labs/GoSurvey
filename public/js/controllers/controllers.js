@@ -26,12 +26,12 @@ define([
 				$rootScope.$on('$routeChangeSuccess', function(next, last){
 					console.log('Navigating from ', last);
 					console.log('Navigating to ', next);
-				})
-			})
+				});
+			});
 		};
 
 		var initialize = function(angModule){
-			angModule.controller('AppController', app)
+			angModule.controller('AppController', app);
 			$.each(controllers, function(name, ctrl) {
 				angModule.controller(name, ctrl);
 			});
