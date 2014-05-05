@@ -50,10 +50,10 @@ func main() {
 		r.Delete("/:id", warranty.Delete)
 	})
 
-	m.Get("/warranty", func(r render.Render) {
+	/*	m.Get("/warranty", func(r render.Render) {
 		r.Redirect("/#/warranty")
-	})
-	m.Get("", func(r render.Render) {
+	})*/
+	m.Get("/**", func(r render.Render) {
 		r.HTML(200, "index", nil)
 	})
 

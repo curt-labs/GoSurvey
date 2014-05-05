@@ -1,7 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Martini Plz</title>
+	<meta name="author" content="CURT Manufacturing, LLC">
+	<meta name="description" content="CURT Manufacturing Survey Central :/">
+	<title>CURT Surveys</title>
+	<base href="/">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="/css/main.css">
 </head>
 <body>
@@ -25,9 +29,9 @@
 					</div>
 					<div class="collapse navbar-collapse pull-right" id="ct-navbar-collapse">
 						<ul class="nav navbar-nav">
-							<li class="active"><a href="/">Home</a></li>
-							<li><a href="/#/surveys">Surveys</a></li>
-							<li><a href="/#/warranty">Activate Warranty</a></li>
+							<li ng-class="{ active: isActive('/home')}"><a href="/">Home</a></li>
+							<li ng-class="{ active: isActive('/surveys')}"><a href="/surveys">Surveys</a></li>
+							<li ng-class="{ active: isActive('/warranty')}"><a href="/warranty">Activate Warranty</a></li>
 						</ul>
 					</div>
 				</div>
@@ -41,19 +45,30 @@
 	<!-- Footer -->
 	<footer>
 		<div class="container-fluid row">
-			<address class="col-lg-3" itemscope itemtype="//schema.org/Organization">
-				<img class="logo" src="/imgs/curt_logo.png" alt="CURT Manufacturing, LLC" itemprop="logo">
-				<span itemprop="name">CURT Manufacturing, LLC</span>
-				<div itemprop="address" itemscope itemtype="//schema.org/PostalAddress">
-					<span itemprop="streetAddress">6208 Indrustrial Drive</span>
-					<br>
-					<span itemprop="addressLocality">Eau Claire</span>
-					<span itemprop="addressRegion">WI</span>
-					<span itemprop="postalCode">54701</span>
-				</div>
-				Phone: <span itemprop="telephone">877.287.8634</span>
-			</address>
-			<div class="col-lg-9"></div>
+			<div class="col-lg-6 col-md-5 col-xs-6">
+				<address itemscope itemtype="//schema.org/Organization">
+					<img class="logo" src="/imgs/curt_logo.png" alt="CURT Manufacturing, LLC" itemprop="logo">
+					<div class="body">
+						<span itemprop="name">CURT Manufacturing, LLC</span>
+						<div itemprop="address" itemscope itemtype="//schema.org/PostalAddress">
+							<span itemprop="streetAddress">6208 Indrustrial Drive</span>
+							<br>
+							<span itemprop="addressLocality">Eau Claire</span>
+							<span itemprop="addressRegion">WI</span>
+							<span itemprop="postalCode">54701</span>
+						</div>
+						Phone: <a href="tel:+18772878634" itemprop="telephone">877.287.8634</a>
+					</div>
+				</address>
+			</div>
+			<div class="col-lg-6 col-md-7 col-xs-6">
+				<ul class="nav nav-pills pull-right">
+					<li class="active"><a href="#/warrant/copy">CURT Warranty</a></li>
+					<li><a href="/#/policy">Policy</a></li>
+					<li><a href="/#/terms">Terms</a></li>
+				</ul>
+				<div class="clearfix"></div>
+			</div>
 		</div>
 	</footer>
 

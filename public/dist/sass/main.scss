@@ -190,6 +190,17 @@ footer{
 			width:150px;
 		}
 	}
+
+	.nav{
+		li > a, li.active > a{
+			background:none;
+			color:#fff;
+			&:hover, &:visited{
+				color: #fff;
+				background:none;
+			}
+		}
+	}
 }
 
 /* Small devices (tablets, 768px and down) */
@@ -198,6 +209,7 @@ footer{
 		.container{
 			.navbar-collapse{
 				float: none !important;
+				font-size: 18px;
 			}
 		}
 	}
@@ -205,11 +217,50 @@ footer{
 	.home-header{
 		height:600px;
 	}
+
+	footer{
+		.row {
+			@include flexbox();
+			flex-flow: row wrap;
+			> div:nth-child(1){
+				@include flex(1 auto);
+				@include order(1);
+				img{
+					float:left;
+					margin-bottom:10px;
+				}
+				.body{
+					float:left;
+					margin-left: 10px;
+				}
+			}
+			> div:nth-child(2){
+				@include flex(1 auto);
+				@include order(0);
+				margin-bottom: 20px;
+
+				ul{
+					float:none !important;
+					li{
+						width:33%;
+						text-align: center;
+						font-size:15px;
+					}
+				}
+			}
+		}
+	}
 }
 
 /* Small devices (tablets, 768px and up) */
 @media (min-width: $screen-sm-min) {
-
+	.navbar{
+		.container{
+			.navbar-collapse{
+				font-size: 16px;
+			}
+		}
+	}
 }
 
 /* Medium devices (desktops, 992px and up) */
