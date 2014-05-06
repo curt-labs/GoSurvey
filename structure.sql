@@ -137,6 +137,7 @@ CREATE TABLE `CurtDev`.`SurveyAnswer` (
 	`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 	`userID` int(11) NOT NULL,
 	`answer` varchar(500) NOT NULL,
+	`data_type` varchar(100) NOT NULL,
 	`date_added` datetime NOT NULL,
 	`date_modified` timestamp NOT NULL ON UPDATE CURRENT_TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	`deleted` tinyint(1) NOT NULL DEFAULT 0,
@@ -194,11 +195,9 @@ CREATE TABLE `CurtDev`.`SurveyUserAnswer` (
 	`userID` int(11) NOT NULL,
 	`surveyID` int(11) UNSIGNED NOT NULL,
 	`questionID` int(11) UNSIGNED NOT NULL,
-	`answerID` int(11) UNSIGNED NOT NULL,
-	`correct` tinyint(1) NOT NULL DEFAULT 0,
+	`answer` varchar(500),
 	`date_answered` timestamp NOT NULL ON UPDATE CURRENT_TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	PRIMARY KEY (`id`),
 	CONSTRAINT `Survey_FK` FOREIGN KEY (`surveyID`) REFERENCES `CurtDev`.`Survey` (`id`),
-	CONSTRAINT `SurveyQuestion_FK` FOREIGN KEY (`questionID`) REFERENCES `CurtDev`.`SurveyQuestion` (`id`),
-	CONSTRAINT `SurveyAnswer_FK` FOREIGN KEY (`answerID`) REFERENCES `CurtDev`.`SurveyAnswer` (`id`)
+	CONSTRAINT `SurveyQuestion_FK` FOREIGN KEY (`questionID`) REFERENCES `CurtDev`.`SurveyQuestion` (`id`)
 ) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=`InnoDB` COMMENT='';

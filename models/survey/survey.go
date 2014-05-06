@@ -1,6 +1,9 @@
 package survey
 
 import (
+	"database/sql"
+	"errors"
+	_ "github.com/go-sql-driver/mysql"
 	"time"
 )
 
@@ -9,7 +12,18 @@ var (
 	getAllSurveys = `select id, name, description,
 										date_added, date_modifed, userID, deleted
 										from Survey order by date_modifed desc`
-	getSurveyRevisions = ``
+	getSurvey = `select id, name, description,
+										date_added, date_modifed, userID, deleted
+										from Survey
+										where id = ? limit 1`
+	getSurveyRevisions = `select
+												sv.ID as revisionID, sv.new_name, sv.old_name,
+												sv.date, sv.changeType,
+												u.id as userID, u.fname, u.lname, u.username
+												from Survey_Revisions as sv
+												join admin.user as u on sv.userID = u.id
+												where surveyID = ?
+												order by date desc`
 )
 
 type Survey struct {
@@ -21,35 +35,134 @@ type Survey struct {
 	UserID       int              `json:"-"`
 	Deleted      bool             `json:"-"`
 	Revisions    []SurveyRevision `json:"revisions"`
-	Questions    []Questions      `json:"questions"`
+	Questions    []Question       `json:"questions"`
 	Completion   SurveyStatus     `json:"-"`
 }
 
 type SurveyStatus struct {
 	Completed     bool `json:"completed"`
 	QuestionCount int  `json:"question_count"`
-	CorrectCount  int  `json:"correct_count"`
 }
 
 type SurveyRevision struct {
+	ID         int          `json:"id"`
+	NewName    *string      `json:"new_name"`
+	OldName    *string      `json:"old_name"`
+	Date       time.Time    `json:"date"`
+	ChangeType string       `json:"change_type"`
+	User       RevisionUser `json:"user"`
+}
+
+type RevisionUser struct {
+	ID        int    `json:"id"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	Username  string `json:"username"`
 }
 
 // GetSurveys will return a list of surveys in
 // the database or an error if empty.
 func GetSurveys() ([]Survey, error) {
 
-	return make([]Survey, 0), nil
+	var svs []Survey
+	var err error
+
+	db, err := sql.Open("mysql", conn)
+	if err != nil {
+		return svs, err
+	}
+
+	defer db.Close()
+
+	stmt, err := db.Prepare(getAllSurveys)
+	if err != nil {
+		return svs, err
+	}
+
+	defer stmt.Close()
+
+	res, err := stmt.Query()
+	if err != nil {
+		return svs, err
+	}
+
+	for res.Next() {
+		var sv Survey
+		err = res.Scan(&sv.ID, &sv.Name, &sv.Description, &sv.DateAdded, &sv.DateModified, &sv.UserID, &sv.Deleted)
+		if err == nil {
+			if err = sv.revisions(); err != nil {
+				panic(err)
+			}
+			svs = append(svs, sv)
+		}
+	}
+
+	return svs, err
 }
 
 // Get will update the values on the bound
 // Survey or return an error.
 func (s *Survey) Get() error {
-	return nil
+	var err error
+
+	db, err := sql.Open("mysql", conn)
+	if err != nil {
+		return err
+	}
+
+	defer db.Close()
+
+	stmt, err := db.Prepare(getSurvey)
+	if err != nil {
+		return err
+	}
+
+	defer stmt.Close()
+
+	id := s.ID
+	s.ID = 0
+	stmt.QueryRow(id).Scan(&s.ID, &s.Name, &s.Description, &s.DateAdded, &s.DateModified, &s.UserID, &s.Deleted)
+	if s.ID == 0 {
+		return errors.New("no survey found")
+	}
+
+	return s.revisions()
 }
 
 // revisions will assign revision
 // history to the bound Survey.
 func (s *Survey) revisions() error {
+	var err error
+
+	db, err := sql.Open("mysql", conn)
+	if err != nil {
+		return err
+	}
+
+	defer db.Close()
+
+	stmt, err := db.Prepare(getSurveyRevisions)
+	if err != nil {
+		return err
+	}
+
+	defer stmt.Close()
+
+	res, err := stmt.Query(s.ID)
+	if err != nil {
+		return err
+	}
+
+	for res.Next() {
+		var r SurveyRevision
+		err = res.Scan(&r.ID, &r.NewName, &r.OldName, &r.Date, &r.ChangeType,
+			&r.User.ID, &r.User.FirstName, &r.User.LastName,
+			&r.User.Username)
+		if err == nil {
+			s.Revisions = append(s.Revisions, r)
+		}
+	}
+
 	return nil
 }
 

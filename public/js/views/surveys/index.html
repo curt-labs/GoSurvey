@@ -4,15 +4,13 @@
 	<div class="row">
 		<!-- Surveys -->
 		<div class="col-lg-9">
-			<p><span>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt, mollitia aperiam dignissimos omnis quia accusantium id repellendus ullam repellat praesentium voluptas assumenda aut error quod illo modi atque. Voluptatem, rem.</span>
-			<span>Excepturi, explicabo, libero autem fuga id atque voluptates quas inventore porro soluta animi vero. Neque, totam, delectus, excepturi dolor repellendus recusandae qui molestiae nulla ipsum ut quibusdam illo architecto necessitatibus.</span>
-			<span>Rem, maiores, ab, magni in deserunt consectetur optio ut molestias blanditiis dolorum similique quae architecto quo corporis illo reiciendis officia quis ducimus quidem rerum sed iusto non et placeat odio?</span></p>
+			<p class="lead">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt, mollitia aperiam dignissimos omnis quia accusantium id repellendus ullam repellat praesentium voluptas assumenda aut error quod illo modi atque. Voluptatem, rem.</p>
 
 			<ul class="survey-container">
 				<li ng-repeat="survey in surveys">
 					<h3>{{ survey.name }}</h3>
 					<p>{{ survey.description | truncate: 400 }}</p>
-					<a href="#/surveys/{{ survey.ID }}" class="btn-flat-success">Take Survey</a>
+					<a href="#/surveys/{{ survey.id }}" class="btn-flat-success">Take Survey</a>
 				</li>
 			</ul>
 		</div>
