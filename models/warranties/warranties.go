@@ -3,13 +3,13 @@ package warranties
 import (
 	"database/sql"
 	"errors"
+	"github.com/curt-labs/GoSurvey/helpers/database"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/martini-contrib/binding"
 	"time"
 )
 
 var (
-	conn             = `root:@tcp(127.0.0.1:3306)/CurtDev?parseTime=true&loc=America%2FChicago`
 	getAllWarranties = `select id, fname, lname, email, part, date_added from ActivatedWarranties`
 	getWarranty      = `select id, fname, lname, email, part, date_added from ActivatedWarranties
 											where id = ?
@@ -31,10 +31,10 @@ type Warranty struct {
 // All retrieves all listed activated
 // warranties from the database.
 func All() ([]Warranty, error) {
-	var ws []Warranty
+	ws := make([]Warranty, 0)
 	var err error
 
-	db, err := sql.Open("mysql", conn)
+	db, err := sql.Open("mysql", database.ConnectionString())
 	if err != nil {
 		return ws, err
 	}
@@ -67,7 +67,7 @@ func All() ([]Warranty, error) {
 // Get returns a warranty based off
 // the supplied ID.
 func (w *Warranty) Get() error {
-	db, err := sql.Open("mysql", conn)
+	db, err := sql.Open("mysql", database.ConnectionString())
 	if err != nil {
 		return err
 	}
@@ -93,7 +93,7 @@ func (w *Warranty) Get() error {
 
 // Add inserts a new warranty.
 func (w *Warranty) Add() error {
-	db, err := sql.Open("mysql", conn)
+	db, err := sql.Open("mysql", database.ConnectionString())
 	if err != nil {
 		return err
 	}
@@ -124,7 +124,7 @@ func (w *Warranty) Add() error {
 }
 
 func (w *Warranty) Delete() error {
-	db, err := sql.Open("mysql", conn)
+	db, err := sql.Open("mysql", database.ConnectionString())
 	if err != nil {
 		return err
 	}

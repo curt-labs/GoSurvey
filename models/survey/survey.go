@@ -3,12 +3,12 @@ package survey
 import (
 	"database/sql"
 	"errors"
+	"github.com/curt-labs/GoSurvey/helpers/database"
 	_ "github.com/go-sql-driver/mysql"
 	"time"
 )
 
 var (
-	conn          = `root:@tcp(127.0.0.1:3306)/CurtDev?parseTime=true&loc=America%2FChicago`
 	getAllSurveys = `select id, name, description,
 										date_added, date_modifed, userID, deleted
 										from Survey order by date_modifed desc`
@@ -64,10 +64,10 @@ type RevisionUser struct {
 // the database or an error if empty.
 func GetSurveys() ([]Survey, error) {
 
-	var svs []Survey
+	svs := make([]Survey, 0)
 	var err error
 
-	db, err := sql.Open("mysql", conn)
+	db, err := sql.Open("mysql", database.ConnectionString())
 	if err != nil {
 		return svs, err
 	}
@@ -105,7 +105,7 @@ func GetSurveys() ([]Survey, error) {
 func (s *Survey) Get() error {
 	var err error
 
-	db, err := sql.Open("mysql", conn)
+	db, err := sql.Open("mysql", database.ConnectionString())
 	if err != nil {
 		return err
 	}
@@ -134,7 +134,7 @@ func (s *Survey) Get() error {
 func (s *Survey) revisions() error {
 	var err error
 
-	db, err := sql.Open("mysql", conn)
+	db, err := sql.Open("mysql", database.ConnectionString())
 	if err != nil {
 		return err
 	}
