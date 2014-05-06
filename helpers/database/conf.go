@@ -13,5 +13,5 @@ func ConnectionString() string {
 		return fmt.Sprintf("%s:%s@%s(%s)/CurtDev?parseTime=true&loc=%s", user, pass, proto, addr, "America%2FChicago")
 	}
 
-	return "root:@tcp(127.0.0.1:3306)/CurtDev?parseTime=true&loc=America/Chicago"
+	return "root:@tcp(127.0.0.1:3306)/CurtDev?parseTime=true&loc=America%2FChicago"
 }
