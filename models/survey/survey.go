@@ -15,15 +15,20 @@ var (
 	getSurvey = `select id, name, description,
 										date_added, date_modifed, userID, deleted
 										from Survey
-										where id = ? limit 1`
+										where id = ? && deleted = 0 limit 1`
 	getSurveyRevisions = `select
 												sv.ID as revisionID, sv.new_name, sv.old_name,
 												sv.date, sv.changeType,
 												u.id as userID, u.fname, u.lname, u.username
 												from Survey_Revisions as sv
 												join admin.user as u on sv.userID = u.id
-												where surveyID = ?
+												where surveyID = ? && deleted = 0
 												order by date desc`
+	insertSurvey = `insert into Survey(name, description, date_added, userID)
+									values(?,?,NOW(), ?)`
+	updateSurvey = `update Survey set name = ?, description = ?, userID = ?
+									where surveyID = ?`
+	deleteSurvey = `update Survey set deleted = 1, userID = ? where surveyID = ?`
 )
 
 type Survey struct {
@@ -168,6 +173,91 @@ func (s *Survey) revisions() error {
 
 // Add will commit the current Survey
 // to the database.
-func (s *Survey) Add() error {
+func (s *Survey) Save() error {
+
+	if s.Name == "" {
+		return errors.New("survey name cannot be blank")
+	}
+
+	if s.UserID == 0 {
+		return errors.New("invalid user reference")
+	}
+
+	if s.ID == 0 {
+		return s.insert()
+	}
+	return s.update()
+}
+
+// insert will insert a new survey record.
+func (s *Survey) insert() error {
+	db, err := sql.Open("mysql", database.ConnectionString())
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+
+	stmt, err := db.Prepare(insertSurvey)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	res, err := stmt.Exec(s.Name, s.Description, s.UserID)
+	if err != nil {
+		return err
+	}
+
+	id, err := res.LastInsertId()
+	if err != nil {
+		return err
+	}
+
+	s.ID = int(id)
+
 	return nil
+}
+
+// update will update an existing survey
+// record.
+func (s *Survey) update() error {
+	db, err := sql.Open("mysql", database.ConnectionString())
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+
+	stmt, err := db.Prepare(updateSurvey)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(s.Name, s.Description, s.UserID, s.ID)
+
+	return err
+}
+
+// Delete will remove (mark as deleted) a Survey
+// from the list of returned results
+func (s *Survey) Delete() error {
+	if s.ID == 0 {
+		return errors.New("invalid survey record")
+	}
+
+	db, err := sql.Open("mysql", database.ConnectionString())
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+
+	stmt, err := db.Prepare(deleteSurvey)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(s.UserID, s.ID)
+
+	return err
 }
