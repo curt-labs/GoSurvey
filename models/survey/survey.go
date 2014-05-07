@@ -24,13 +24,13 @@ var (
 												u.id as userID, u.fname, u.lname, u.username
 												from Survey_Revisions as sv
 												join admin.user as u on sv.userID = u.id
-												where surveyID = ?
+												where sv.surveyID = ?
 												order by date desc`
 	insertSurvey = `insert into Survey(name, description, date_added, userID)
 									values(?,?,NOW(), ?)`
 	updateSurvey = `update Survey set name = ?, description = ?, userID = ?
-									where surveyID = ?`
-	deleteSurvey = `update Survey set deleted = 1, userID = ? where surveyID = ?`
+									where id = ?`
+	deleteSurvey = `update Survey set deleted = 1, userID = ? where id = ?`
 )
 
 type Survey struct {
