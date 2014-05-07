@@ -11,7 +11,9 @@ import (
 var (
 	getAllSurveys = `select id, name, description,
 										date_added, date_modifed, userID, deleted
-										from Survey order by date_modifed desc`
+										from Survey
+										where deleted = 0
+										order by date_modifed desc`
 	getSurvey = `select id, name, description,
 										date_added, date_modifed, userID, deleted
 										from Survey
@@ -22,7 +24,7 @@ var (
 												u.id as userID, u.fname, u.lname, u.username
 												from Survey_Revisions as sv
 												join admin.user as u on sv.userID = u.id
-												where surveyID = ? && deleted = 0
+												where surveyID = ?
 												order by date desc`
 	insertSurvey = `insert into Survey(name, description, date_added, userID)
 									values(?,?,NOW(), ?)`
