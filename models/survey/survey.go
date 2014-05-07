@@ -97,9 +97,8 @@ func GetSurveys() ([]Survey, error) {
 		var sv Survey
 		err = res.Scan(&sv.ID, &sv.Name, &sv.Description, &sv.DateAdded, &sv.DateModified, &sv.UserID, &sv.Deleted)
 		if err == nil {
-			if err = sv.revisions(); err != nil {
-				panic(err)
-			}
+			sv.revisions()
+			sv.questions()
 			svs = append(svs, sv)
 		}
 	}
@@ -133,7 +132,10 @@ func (s *Survey) Get() error {
 		return errors.New("no survey found")
 	}
 
-	return s.revisions()
+	s.revisions()
+	s.questions()
+
+	return nil
 }
 
 // revisions will assign revision
