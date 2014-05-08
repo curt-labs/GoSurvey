@@ -14,6 +14,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"time"
 )
 
 var (
@@ -56,13 +57,17 @@ func main() {
 		r.Get("/:id", surveys.Get)
 	})
 
-	/*	m.Get("/warranty", func(r render.Render) {
-		r.Redirect("/#/warranty")
-	})*/
 	m.Get("/**", func(r render.Render) {
 		r.HTML(200, "index", nil)
 	})
 
+	srv := &http.Server{
+		Addr:         *listenAddr,
+		Handler:      m,
+		ReadTimeout:  30 * time.Second,
+		WriteTimeout: 30 * time.Second,
+	}
+
 	log.Printf("Starting server on 127.0.0.1:%s\n", *listenAddr)
-	log.Fatal(http.ListenAndServe(*listenAddr, m))
+	log.Fatal(srv.ListenAndServe())
 }
