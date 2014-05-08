@@ -2,11 +2,13 @@ package survey
 
 import (
 	"database/sql"
+	"errors"
 	"github.com/curt-labs/GoSurvey/helpers/database"
 	_ "github.com/go-sql-driver/mysql"
 	"time"
 )
 
+// SQL Statements
 var (
 	getQuestionAnswers = `select id, answer, date_modified,
 												date_added, userID, deleted
@@ -20,8 +22,18 @@ var (
 													join admin.user as u on ar.userID = u.id
 													where ar.answerID = ?
 													order by date desc`
+	insertAnswer = `insert into SurveyAnswer(answer, data_type, date_added, userID, questionID)
+									values(?,?,NOW(),?, ?)`
+	updateAnswer = `update SurveyAnswer
+									set answer = ?, data_type = ?, userID = ?, questionID = ?
+									where id = ?`
+	deleteAnswer = `update SurveyAnswer
+									set deleted = 0, userID = ?
+									where id = ?`
 )
 
+// Answer contains information for a possible answer
+// for a given Question.
 type Answer struct {
 	ID           int              `json:"id"`
 	Answer       string           `json:"answer"`
@@ -33,6 +45,7 @@ type Answer struct {
 	Revisions    []AnswerRevision `json:"revisions"`
 }
 
+// AnswerRevision is a change record for an Answer.
 type AnswerRevision struct {
 	ID         int          `json:"id"`
 	User       RevisionUser `json:"user"`
@@ -42,6 +55,19 @@ type AnswerRevision struct {
 	ChangeType string       `json:"change_type"`
 }
 
+// AddAnswer will commit a new Answer to
+// a Question.
+func (q *Question) AddAnswer(a Answer) error {
+
+	if a.ID == 0 {
+		return a.insert(q.ID)
+	}
+
+	return a.update(q.ID)
+}
+
+// answers will push each answer for the
+// given Question onto the Answers slice.
 func (q *Question) answers() error {
 	q.Answers = make([]Answer, 0)
 	var err error
@@ -75,6 +101,76 @@ func (q *Question) answers() error {
 	return nil
 }
 
+// insert will insert a new Answer and bind it
+// to the given Question.
+func (a *Answer) insert(questionID int) error {
+	if questionID == 0 {
+		return errors.New("invalid question reference")
+	}
+
+	db, err := sql.Open("mysql", database.ConnectionString())
+	if err != nil {
+		return err
+	}
+
+	stmt, err := db.Prepare(insertAnswer)
+	if err != nil {
+		return err
+	}
+
+	res, err := stmt.Exec(a.Answer, a.DataType, a.UserID, questionID)
+	if err != nil {
+		return err
+	}
+
+	id, err := res.LastInsertId()
+	if err != nil {
+		return err
+	}
+
+	a.ID = int(id)
+
+	return nil
+}
+
+// udpate will update the answer, data_type, userID,
+// and questionID properties for the given Answer.
+func (a *Answer) update(questionID int) error {
+	db, err := sql.Open("mysql", database.ConnectionString())
+	if err != nil {
+		return err
+	}
+
+	stmt, err := db.Prepare(updateAnswer)
+	if err != nil {
+		return err
+	}
+
+	_, err = stmt.Exec(a.Answer, a.DataType, a.UserID, questionID)
+
+	return err
+}
+
+// Delete will mark the referenced Answer
+// as deleted.
+func (a *Answer) Delete() error {
+	db, err := sql.Open("mysql", database.ConnectionString())
+	if err != nil {
+		return err
+	}
+
+	stmt, err := db.Prepare(deleteAnswer)
+	if err != nil {
+		return err
+	}
+
+	_, err = stmt.Exec(a.UserID, a.ID)
+	return err
+}
+
+// revisions will retrieve all revisions for the
+// referenced Answer and push them onto the Revisions
+// slice.
 func (a *Answer) revisions() error {
 	var err error
 

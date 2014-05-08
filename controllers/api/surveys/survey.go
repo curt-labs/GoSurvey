@@ -37,28 +37,3 @@ func Get(rw http.ResponseWriter, req *http.Request, r render.Render, params mart
 
 	r.JSON(200, sv)
 }
-
-// func Add(rw http.ResponseWriter, req *http.Request, r render.Render, params martini.Params, w warranties.Warranty) {
-// 	if err := w.Add(); err != nil {
-// 		r.JSON(500, WarrantyError{err.Error()})
-// 		return
-// 	}
-
-// 	r.JSON(200, w)
-// }
-
-// func Delete(rw http.ResponseWriter, req *http.Request, r render.Render, params martini.Params) {
-
-// 	var w warranties.Warranty
-// 	var err error
-// 	if w.ID, err = strconv.Atoi(params["id"]); err != nil {
-// 		r.JSON(500, WarrantyError{err.Error()})
-// 		return
-// 	}
-
-// 	if err = w.Delete(); err != nil {
-// 		r.JSON(500, WarrantyError{err.Error()})
-// 		return
-// 	}
-// 	r.Status(200)
-// }

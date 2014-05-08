@@ -7,6 +7,7 @@ import (
 	"time"
 )
 
+// SQL Statements
 var (
 	getSurveyQuestions = `select id, question, date_modified,
 												date_added, userID, deleted
@@ -20,8 +21,19 @@ var (
 													join admin.user as u on qr.userID = u.id
 													where qr.questionID = ?
 													order by date desc`
+	insertQuestion = `insert into SurveyQuestion(question, date_added, userID, surveyID)
+										values(?,NOW(),?,?)`
+	updateQuestion = `update SurveyQuestion
+										set question = ?, userID = ?, surveyID = ?
+										where id = ?`
+	deleteQuestion = `update SurveyQuestion
+										set deleted = 0, userID = ?
+										where id = ?`
 )
 
+// Question contains information for a question
+// on a survey. It contains answers and revision history
+// for both the question an each answer.
 type Question struct {
 	ID           int                `json:"id"`
 	Question     string             `json:"question"`
@@ -33,6 +45,7 @@ type Question struct {
 	Answers      []Answer           `json:"answers"`
 }
 
+// QuestionRevision is a change record for a Question.
 type QuestionRevision struct {
 	ID          int          `json:"id"`
 	User        RevisionUser `json:"user"`
@@ -42,6 +55,96 @@ type QuestionRevision struct {
 	ChangeType  string       `json:"change_type"`
 }
 
+// AddQuestion will commit a new question to a
+// referenced Survey.
+func (s *Survey) AddQuestion(q Question) error {
+	var err error
+
+	if q.ID == 0 {
+		err = q.insert(s.ID)
+	} else {
+		err = q.update(s.ID)
+	}
+
+	if err != nil {
+		return err
+	}
+
+	for _, answer := range q.Answers {
+		if err = q.AddAnswer(answer); err != nil {
+			return err
+		}
+	}
+
+	return err
+}
+
+// Delete will mark the referenced Question
+// as deleted.
+func (q *Question) Delete() error {
+	db, err := sql.Open("mysql", database.ConnectionString())
+	if err != nil {
+		return err
+	}
+
+	stmt, err := db.Prepare(deleteQuestion)
+	if err != nil {
+		return err
+	}
+
+	_, err = stmt.Exec(q.UserID, q.ID)
+	return err
+}
+
+// insert will insert a new Question and bint it
+// to the given Survey.
+func (q *Question) insert(surveyID int) error {
+
+	db, err := sql.Open("mysql", database.ConnectionString())
+	if err != nil {
+		return err
+	}
+
+	stmt, err := db.Prepare(insertQuestion)
+	if err != nil {
+		return err
+	}
+
+	res, err := stmt.Exec(q.Question, q.UserID, surveyID)
+	if err != nil {
+		return err
+	}
+
+	id, err := res.LastInsertId()
+	if err != nil {
+		return err
+	}
+
+	q.ID = int(id)
+
+	return nil
+}
+
+// update will update the question, userID, and surveyID
+// properties for the given Question.
+func (q *Question) update(surveyID int) error {
+	db, err := sql.Open("mysql", database.ConnectionString())
+	if err != nil {
+		return err
+	}
+
+	stmt, err := db.Prepare(updateQuestion)
+	if err != nil {
+		return err
+	}
+
+	_, err = stmt.Exec(q.Question, q.UserID, surveyID, q.ID)
+
+	return err
+}
+
+// questions will retrieve all possible questions
+// for the referenced Survey.
 func (s *Survey) questions() error {
 	s.Questions = make([]Question, 0)
 	var err error
@@ -75,6 +178,9 @@ func (s *Survey) questions() error {
 	return nil
 }
 
+// revisions will retrieve all revision history
+// for the referenced Question and push them onto
+// the Revisions slice.
 func (q *Question) revisions() error {
 	var err error
 

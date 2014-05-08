@@ -2,11 +2,11 @@ use CurtDev;
 
 DROP TABLE IF EXISTS ActivatedWarranties;
 CREATE TABLE `CurtDev`.`ActivatedWarranties` (
-	`id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+	`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 	`fname` varchar(255),
 	`lname` varchar(255),
 	`email` varchar(255),
-	`part` int(10),
+	`part` int(11),
 	`date_added` timestamp NOT NULL ON UPDATE CURRENT_TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	PRIMARY KEY (`id`),
 	CONSTRAINT `Part_FK` FOREIGN KEY (`part`) REFERENCES `CurtDev`.`Part` (`partID`)
@@ -18,6 +18,10 @@ CREATE TABLE `CurtDev`.`ActivatedWarranties` (
 
 DROP TABLE IF EXISTS SurveyUser;
 DROP TABLE IF EXISTS SurveyUserAnswer;
+DROP TABLE IF EXISTS SurveyAnswer;
+DROP TABLE IF EXISTS SurveyAnswer_Revisions;
+DROP TRIGGER IF EXISTS SurveyAnswers_Insert;
+DROP TRIGGER IF EXISTS SurveyAnswers_Update;
 DROP TABLE IF EXISTS Survey;
 DROP TABLE IF EXISTS Survey_Revisions;
 DROP TRIGGER IF EXISTS Survey_Insert;
@@ -26,10 +30,6 @@ DROP TABLE IF EXISTS SurveyQuestion_Revisions;
 DROP TABLE IF EXISTS SurveyQuestion;
 DROP TRIGGER IF EXISTS SurveyQuestion_Insert;
 DROP TRIGGER IF EXISTS SurveyQuestion_Update;
-DROP TABLE IF EXISTS SurveyAnswer;
-DROP TABLE IF EXISTS SurveyAnswer_Revisions;
-DROP TRIGGER IF EXISTS SurveyAnswers_Insert;
-DROP TRIGGER IF EXISTS SurveyAnswers_Update;
 
 # Survey
 CREATE TABLE `CurtDev`.`Survey` (
@@ -45,13 +45,13 @@ CREATE TABLE `CurtDev`.`Survey` (
 
 # Survey Revision Tracking
 CREATE TABLE `CurtDev`.`Survey_Revisions` (
-	`id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+	`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 	`userID` int NOT NULL,
 	`new_name` varchar(500),
 	`old_name` varchar(500),
 	`date` datetime NOT NULL,
 	`changeType` enum('NEW','EDIT','DELETE') NOT NULL,
-	`surveyID` int(10),
+	`surveyID` int(11),
 	PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=`InnoDB` COMMENT='Revision Tracking for Surveys';
 
@@ -77,7 +77,7 @@ delimiter ;
 
 # Question Revision Tracking
 CREATE TABLE `CurtDev`.`SurveyQuestion_Revisions` (
-	`id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+	`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 	`userID` int NOT NULL,
 	`new_question` varchar(500),
 	`old_question` varchar(500),
@@ -93,13 +93,12 @@ CREATE TABLE `CurtDev`.`SurveyQuestion_Revisions` (
 
 # Survey Questions
 CREATE TABLE `CurtDev`.`SurveyQuestion` (
-	`id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+	`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 	`question` varchar(500) NOT NULL,
 	`date_modified` timestamp NOT NULL ON UPDATE CURRENT_TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	`date_added` datetime NOT NULL,
 	`userID` int NOT NULL,
 	`surveyID` int NOT NULL,
-	`answerID` int NOT NULL,
 	`deleted` tinyint(1) NOT NULL DEFAULT 0,
 	PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=`InnoDB` COMMENT='Survey Questions';
@@ -113,8 +112,8 @@ CREATE TRIGGER `SurveyQuestion_Insert` AFTER INSERT ON `SurveyQuestion` FOR EACH
 		ELSE SET @changeType = 'NEW';
 	END IF;
 
-	INSERT INTO SurveyQuestion_Revisions(userID, new_question, date, changeType, questionID, new_answer, new_survey)
-	VALUES(NEW.userID, NEW.question, CURRENT_TIMESTAMP, @changeType, NEW.id, NEW.answerID, NEW.surveyID);
+	INSERT INTO SurveyQuestion_Revisions(userID, new_question, date, changeType, questionID, new_survey)
+	VALUES(NEW.userID, NEW.question, CURRENT_TIMESTAMP, @changeType, NEW.id, NEW.surveyID);
 END
 |
 
@@ -125,8 +124,8 @@ CREATE TRIGGER `SurveyQuestion_Update` AFTER UPDATE ON `SurveyQuestion` FOR EACH
 		SET @changeType = 'EDIT';
 	END IF;
 
-	INSERT INTO SurveyQuestion_Revisions(userID, new_question, old_question, date, changeType, questionID, new_answer, old_answer, new_survey, old_survey)
-	VALUES(NEW.userID, NEW.question, OLD.question, NOW(), @changeType, NEW.id, NEW.answerID, OLD.answerID, NEW.surveyID, OLD.surveyID);
+	INSERT INTO SurveyQuestion_Revisions(userID, new_question, old_question, date, changeType, questionID, new_survey, old_survey)
+	VALUES(NEW.userID, NEW.question, OLD.question, NOW(), @changeType, NEW.id, NEW.surveyID, OLD.surveyID);
 END
 |
 
@@ -141,18 +140,20 @@ CREATE TABLE `CurtDev`.`SurveyAnswer` (
 	`date_added` datetime NOT NULL,
 	`date_modified` timestamp NOT NULL ON UPDATE CURRENT_TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	`deleted` tinyint(1) NOT NULL DEFAULT 0,
-	PRIMARY KEY (`id`)
+	`questionID` int(11) UNSIGNED NOT NULL,
+	PRIMARY KEY (`id`),
+	CONSTRAINT `SurveyQuestion_FK` FOREIGN KEY (`questionID`) REFERENCES `CurtDev`.`SurveyQuestion` (`id`)
 ) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=`InnoDB` COMMENT='Answers to Survey Questions';
 
 # Answer Revision Tracking
 CREATE TABLE `CurtDev`.`SurveyAnswer_Revisions` (
-	`id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+	`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 	`userID` int NOT NULL,
 	`new_answer` varchar(500),
 	`old_answer` varchar(500),
 	`date` datetime NOT NULL,
 	`changeType` enum('NEW','EDIT','DELETE') NOT NULL,
-	`answerID` int(10),
+	`answerID` int(11),
 	PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=`InnoDB` COMMENT='Revision Tracking for Survey Answers';
 
@@ -199,5 +200,5 @@ CREATE TABLE `CurtDev`.`SurveyUserAnswer` (
 	`date_answered` timestamp NOT NULL ON UPDATE CURRENT_TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	PRIMARY KEY (`id`),
 	CONSTRAINT `Survey_FK` FOREIGN KEY (`surveyID`) REFERENCES `CurtDev`.`Survey` (`id`),
-	CONSTRAINT `SurveyQuestion_FK` FOREIGN KEY (`questionID`) REFERENCES `CurtDev`.`SurveyQuestion` (`id`)
+	CONSTRAINT `SurveyQuestionAnswer_FK` FOREIGN KEY (`questionID`) REFERENCES `CurtDev`.`SurveyQuestion` (`id`)
 ) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=`InnoDB` COMMENT='';
