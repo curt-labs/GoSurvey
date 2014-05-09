@@ -13,8 +13,10 @@ var (
 										date_added, date_modifed, userID, deleted
 										from Survey
 										where deleted = 0
-										order by date_modifed desc`
-	getSurvey = `select id, name, description,
+										order by date_modifed desc
+										limit ?,?`
+	getSurveyCount = `select count(id) as count from Survey where deleted = 0`
+	getSurvey      = `select id, name, description,
 										date_added, date_modifed, userID, deleted
 										from Survey
 										where id = ? && deleted = 0 limit 1`
@@ -69,7 +71,10 @@ type RevisionUser struct {
 
 // GetSurveys will return a list of surveys in
 // the database or an error if empty.
-func GetSurveys() ([]Survey, error) {
+func GetSurveys(skip, take int) ([]Survey, error) {
+	if take == 0 {
+		take = 25
+	}
 
 	svs := make([]Survey, 0)
 	var err error
@@ -88,7 +93,7 @@ func GetSurveys() ([]Survey, error) {
 
 	defer stmt.Close()
 
-	res, err := stmt.Query()
+	res, err := stmt.Query(skip, take)
 	if err != nil {
 		return svs, err
 	}
@@ -104,6 +109,32 @@ func GetSurveys() ([]Survey, error) {
 	}
 
 	return svs, err
+}
+
+// SurveyCount will return the total number of
+// surveys in the database that aren't marked as
+// deleted.
+func SurveyCount() int {
+	var err error
+
+	db, err := sql.Open("mysql", database.ConnectionString())
+	if err != nil {
+		return 0
+	}
+
+	defer db.Close()
+
+	stmt, err := db.Prepare(getSurveyCount)
+	if err != nil {
+		return 0
+	}
+
+	defer stmt.Close()
+
+	var total int
+	stmt.QueryRow().Scan(&total)
+
+	return total
 }
 
 // Get will update the values on the bound

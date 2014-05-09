@@ -1,6 +1,13 @@
 <div class="container">
 	<h1>{{ survey.name }}</h1>
 	<p>{{ survey.description }}</p>
+
+	<div class="question" ng-repeat="question in survey.questions">
+		<p>{{ question.question }}</p>
+		<ul>
+			<li ng-repeat="answer in question.answers">{{ answer.answer }}</li>
+		</ul>
+	</div>
 </div>
 
 

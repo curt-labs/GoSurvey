@@ -12,13 +12,45 @@ type SurveyError struct {
 	Message string `json:"error"`
 }
 
+type SurveyResponse struct {
+	Surveys      []survey.Survey `json:"surveys"`
+	TotalSurveys int             `json:"total_surveys"`
+	CurrentPage  int             `json:"current_page"`
+	TotalResults int             `json:"total_results"`
+}
+
 func All(rw http.ResponseWriter, req *http.Request, r render.Render) {
-	svs, err := survey.GetSurveys()
+	params := req.URL.Query()
+	var take int
+	var page int
+	var err error
+	total := make(chan int, 0)
+
+	go func() {
+		total <- survey.SurveyCount()
+	}()
+
+	take, err = strconv.Atoi(params.Get("count"))
+	page, err = strconv.Atoi(params.Get("page"))
+
+	svs, err := survey.GetSurveys(page*take, take)
 	if err != nil {
-		panic(err)
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
-	r.JSON(200, svs)
+	if page == 0 {
+		page = 1
+	}
+
+	sr := SurveyResponse{
+		Surveys:      svs,
+		CurrentPage:  page,
+		TotalResults: len(svs),
+		TotalSurveys: <-total,
+	}
+
+	r.JSON(200, sr)
 }
 
 func Get(rw http.ResponseWriter, req *http.Request, r render.Render, params martini.Params) {
