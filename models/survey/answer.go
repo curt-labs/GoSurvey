@@ -59,6 +59,10 @@ type AnswerRevision struct {
 // a Question.
 func (q *Question) AddAnswer(a Answer) error {
 
+	if a.DataType != "input" && a.Answer == "" {
+		return errors.New("only user input answers can be blank")
+	}
+
 	if a.ID == 0 {
 		return a.insert(q.ID)
 	}

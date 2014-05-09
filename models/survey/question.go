@@ -2,6 +2,7 @@ package survey
 
 import (
 	"database/sql"
+	"errors"
 	"github.com/curt-labs/GoSurvey/helpers/database"
 	_ "github.com/go-sql-driver/mysql"
 	"time"
@@ -59,6 +60,10 @@ type QuestionRevision struct {
 // referenced Survey.
 func (s *Survey) AddQuestion(q Question) (Question, error) {
 	var err error
+
+	if q.Question == "" {
+		return q, errors.New("question cannot be blank")
+	}
 
 	if q.ID == 0 {
 		err = q.insert(s.ID)
@@ -171,6 +176,7 @@ func (s *Survey) questions() error {
 		err = res.Scan(&q.ID, &q.Question, &q.DateModified, &q.DateAdded, &q.UserID, &q.Deleted)
 		if err == nil {
 			q.revisions()
+			q.answers()
 			s.Questions = append(s.Questions, q)
 		}
 	}
