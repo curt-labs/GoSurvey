@@ -10,7 +10,7 @@ import (
 
 // SQL Statements
 var (
-	getQuestionAnswers = `select id, answer, date_modified,
+	getQuestionAnswers = `select id, answer, data_type, date_modified,
 												date_added, userID, deleted
 												from SurveyAnswer
 												where questionID = ? && deleted = 0
@@ -95,7 +95,7 @@ func (q *Question) answers() error {
 
 	for res.Next() {
 		var a Answer
-		err = res.Scan(&a.ID, &a.Answer, &a.DateModified, &a.DateAdded, &a.UserID, &a.Deleted)
+		err = res.Scan(&a.ID, &a.Answer, &a.DataType, &a.DateModified, &a.DateAdded, &a.UserID, &a.Deleted)
 		if err == nil {
 			a.revisions()
 			q.Answers = append(q.Answers, a)
