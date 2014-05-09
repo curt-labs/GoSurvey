@@ -57,7 +57,7 @@ type QuestionRevision struct {
 
 // AddQuestion will commit a new question to a
 // referenced Survey.
-func (s *Survey) AddQuestion(q Question) error {
+func (s *Survey) AddQuestion(q Question) (Question, error) {
 	var err error
 
 	if q.ID == 0 {
@@ -67,16 +67,16 @@ func (s *Survey) AddQuestion(q Question) error {
 	}
 
 	if err != nil {
-		return err
+		return q, err
 	}
 
 	for _, answer := range q.Answers {
 		if err = q.AddAnswer(answer); err != nil {
-			return err
+			return q, err
 		}
 	}
 
-	return err
+	return q, err
 }
 
 // Delete will mark the referenced Question
