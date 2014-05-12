@@ -2,12 +2,31 @@
 	<h1>{{ survey.name }}</h1>
 	<p>{{ survey.description }}</p>
 
-	<div class="question" ng-repeat="question in survey.questions">
-		<p>{{ question.question }}</p>
-		<ul>
-			<li ng-repeat="answer in question.answers">{{ answer.answer }}</li>
-		</ul>
-	</div>
+	<form class="survey-form form-horizontal" role="form">
+		<div class="question" ng-repeat="question in survey.questions">
+			<p class="text">{{ question.question }}</p>
+			<div ng-switch on="question">
+				<div ng-if="question.selects != undefined">
+					<div class="form-group col-lg-6">
+						<select name="{{question.id}}" class="form-control">
+							<option value="">-- Select Anser --</option>
+							<option ng-repeat="select in question.selects" value="{{select.id}}">{{select.answer}}</option>
+						</select>
+					</div>
+					<div class="form-group row">
+						<div class="form-control col-lg-6" ng-repeat="answer in question.answers">
+							<input class="form-control" ng-repeat="answer in question.answers" name="{{question.id}}" placeholder="Enter answer..." type="text">
+						</div>
+					</div>
+				</div>
+				<div ng-if="question.selects == undefined" class="row">
+					<div class="col-lg-6">
+						<input class="form-control" ng-repeat="answer in question.answers" type="text" name="{{question.id}}" placeholder="Enter answer...">
+					</div>
+				</div>
+			</div>
+		</div> <!-- End .questions -->
+	</form> <!-- End .survey-form -->
 </div>
 
 

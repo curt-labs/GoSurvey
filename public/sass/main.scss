@@ -172,6 +172,16 @@ html,body{
 			}
 		}
 	}
+
+	.question{
+		padding: 10px 0;
+		.text{
+			margin-bottom:10px;
+			font-size: 16px;
+			font-weight:400;
+			border-bottom: 1px solid #eaeaea;
+		}
+	}
 }
 
 footer{
