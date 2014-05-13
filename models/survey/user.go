@@ -35,6 +35,18 @@ type SurveySubmissionAnswer struct {
 
 func (s *SurveySubmission) Submit() error {
 
+	if len(s.Questions) == 0 {
+		return errors.New("cannot submit a survey without answers")
+	}
+
+	surv := Survey{
+		ID: s.ID,
+	}
+
+	if err := surv.Get(); err != nil {
+		return err
+	}
+
 	if err := s.User.save(); err != nil {
 		return err
 	}
@@ -43,7 +55,7 @@ func (s *SurveySubmission) Submit() error {
 
 	for _, question := range s.Questions {
 		go func(ss *SurveySubmission) {
-			ch <- question.save(s.User.ID, s.ID)
+			ch <- question.save(ss.User.ID, ss.ID)
 		}(s)
 	}
 

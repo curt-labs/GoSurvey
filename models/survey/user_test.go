@@ -32,5 +32,121 @@ func TestSubmission(t *testing.T) {
 		q, err = s.AddQuestion(q)
 		So(err, ShouldEqual, nil)
 		So(len(q.Answers), ShouldNotEqual, 0)
+
+		var ss SurveySubmission
+		err = ss.Submit()
+		So(err, ShouldNotEqual, nil)
+
+		ss = SurveySubmission{
+			ID: s.ID,
+		}
+		err = ss.Submit()
+		So(err, ShouldNotEqual, nil)
+
+		ss = SurveySubmission{
+			ID:   s.ID,
+			User: SurveyUser{},
+			Questions: []SurveySubmissionAnswer{
+				SurveySubmissionAnswer{
+					ID:     q.ID,
+					Answer: "Test Answer",
+				},
+			},
+		}
+		err = ss.Submit()
+		So(err, ShouldNotEqual, nil)
+
+		ss = SurveySubmission{
+			ID: s.ID,
+			User: SurveyUser{
+				FirstName: "Test",
+			},
+			Questions: []SurveySubmissionAnswer{
+				SurveySubmissionAnswer{
+					ID:     q.ID,
+					Answer: "Test Answer",
+				},
+			},
+		}
+		err = ss.Submit()
+		So(err, ShouldNotEqual, nil)
+
+		ss = SurveySubmission{
+			ID: s.ID,
+			User: SurveyUser{
+				FirstName: "Test",
+				LastName:  "User",
+			},
+			Questions: []SurveySubmissionAnswer{
+				SurveySubmissionAnswer{
+					ID:     q.ID,
+					Answer: "Test Answer",
+				},
+			},
+		}
+		err = ss.Submit()
+		So(err, ShouldNotEqual, nil)
+
+		ss = SurveySubmission{
+			ID: s.ID,
+			User: SurveyUser{
+				FirstName: "Test",
+				LastName:  "User",
+				Email:     "user@example.com",
+			},
+		}
+		err = ss.Submit()
+		So(err, ShouldNotEqual, nil)
+
+		ss = SurveySubmission{
+			ID: s.ID,
+			User: SurveyUser{
+				FirstName: "Test",
+				LastName:  "User",
+				Email:     "test@example.com",
+			},
+			Questions: []SurveySubmissionAnswer{
+				SurveySubmissionAnswer{
+					ID: 0,
+				},
+			},
+		}
+		err = ss.Submit()
+		So(err, ShouldNotEqual, nil)
+
+		ss = SurveySubmission{
+			ID: s.ID,
+			User: SurveyUser{
+				FirstName: "Test",
+				LastName:  "User",
+				Email:     "test@example.com",
+			},
+			Questions: []SurveySubmissionAnswer{
+				SurveySubmissionAnswer{
+					ID:     q.ID,
+					Answer: "",
+				},
+			},
+		}
+		err = ss.Submit()
+		So(err, ShouldNotEqual, nil)
+
+		ss = SurveySubmission{
+			ID: s.ID,
+			User: SurveyUser{
+				FirstName: "Test",
+				LastName:  "User",
+				Email:     "test@example.com",
+			},
+			Questions: []SurveySubmissionAnswer{
+				SurveySubmissionAnswer{
+					ID:     q.ID,
+					Answer: "Test Answer",
+				},
+			},
+		}
+		err = ss.Submit()
+		So(err, ShouldEqual, nil)
+
 	})
 }
