@@ -21,7 +21,7 @@ var (
 										from Survey
 										where id = ? && deleted = 0 limit 1`
 	getSurveyRevisions = `select
-												sv.ID as revisionID, sv.new_name, sv.old_name,
+												sv.ID as revisionID, IFNULL(sv.new_name, ""), IFNULL(sv.old_name, ""),
 												sv.date, sv.changeType,
 												u.id as userID, u.fname, u.lname, u.username
 												from Survey_Revisions as sv

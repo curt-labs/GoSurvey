@@ -55,6 +55,7 @@ func main() {
 	m.Group("/api/survey", func(r martini.Router) {
 		r.Get("", surveys.All)
 		r.Get("/:id", surveys.Get)
+		r.Post("/:id", surveys.Submit)
 	})
 
 	m.Get("/**", func(r render.Render) {

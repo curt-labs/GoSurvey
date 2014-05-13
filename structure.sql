@@ -192,7 +192,7 @@ CREATE TABLE `CurtDev`.`SurveyUser` (
 ) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=`InnoDB` COMMENT='User Information for taking surveys';
 
 CREATE TABLE `CurtDev`.`SurveyUserAnswer` (
-	`id` int(11) NOT NULL,
+	`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 	`userID` int(11) NOT NULL,
 	`surveyID` int(11) UNSIGNED NOT NULL,
 	`questionID` int(11) UNSIGNED NOT NULL,

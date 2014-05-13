@@ -1,6 +1,7 @@
 package surveys
 
 import (
+	"encoding/json"
 	"github.com/curt-labs/GoSurvey/models/survey"
 	"github.com/go-martini/martini"
 	"github.com/martini-contrib/render"
@@ -68,4 +69,33 @@ func Get(rw http.ResponseWriter, req *http.Request, r render.Render, params mart
 	}
 
 	r.JSON(200, sv)
+}
+
+func Submit(rw http.ResponseWriter, req *http.Request) {
+	defer req.Body.Close()
+
+	dec := json.NewDecoder(req.Body)
+	var s survey.SurveySubmission
+	err := dec.Decode(&s)
+	if err != nil {
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = s.Submit()
+	if err != nil {
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	success := struct {
+		Success bool `json:"success"`
+	}{
+		true,
+	}
+
+	js, _ := json.Marshal(success)
+
+	rw.Header().Set("Content-Type", "application/json")
+	rw.Write(js)
 }

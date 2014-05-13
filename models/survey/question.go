@@ -15,8 +15,8 @@ var (
 												from SurveyQuestion
 												where surveyID = ? && deleted = 0
 												order by date_added`
-	getQuestionRevisions = `select qr.ID as revisionID, qr.new_question,
-													qr.old_question, qr.date, qr.changeType,
+	getQuestionRevisions = `select qr.ID as revisionID, IFNULL(qr.new_question, ""),
+													IFNULL(qr.old_question, ""), qr.date, qr.changeType,
 													u.id as userID, u.fname, u.lname, u.username
 													from SurveyQuestion_Revisions as qr
 													join admin.user as u on qr.userID = u.id
@@ -64,6 +64,9 @@ func (s *Survey) AddQuestion(q Question) (Question, error) {
 	if q.Question == "" {
 		return q, errors.New("question cannot be blank")
 	}
+	if q.UserID == 0 {
+		return q, errors.New("user reference not found")
+	}
 
 	if q.ID == 0 {
 		err = q.insert(s.ID)
@@ -75,8 +78,9 @@ func (s *Survey) AddQuestion(q Question) (Question, error) {
 		return q, err
 	}
 
-	for _, answer := range q.Answers {
+	for i, answer := range q.Answers {
 		if err = q.AddAnswer(answer); err != nil {
+			q.Answers = append(q.Answers[:i], q.Answers[i+1:]...)
 			return q, err
 		}
 	}
@@ -87,6 +91,11 @@ func (s *Survey) AddQuestion(q Question) (Question, error) {
 // Delete will mark the referenced Question
 // as deleted.
 func (q *Question) Delete() error {
+
+	if q.ID == 0 {
+		return errors.New("cannot delete a question that doesn't exist")
+	}
+
 	db, err := sql.Open("mysql", database.ConnectionString())
 	if err != nil {
 		return err

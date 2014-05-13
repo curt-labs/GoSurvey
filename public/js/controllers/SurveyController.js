@@ -1,7 +1,14 @@
 define([],function(){
 	'use strict';
 
-	var ctlr = ['$scope', '$route', '$routeParams', 'SurveyService',function($scope, $route, $routeParams, SurveyService){
+	var ctlr = ['$scope',
+		'$route',
+		'$routeParams',
+		'$http',
+		'$location',
+		'SurveyService',
+	function($scope, $route, $routeParams, $http, $location, SurveyService){
+		$scope.alerts = [];
 		SurveyService.get({id: $routeParams.id}, function(survey){
 			for (var i = 0; i < survey.questions.length; i++) {
 				var answers = [];
@@ -20,7 +27,35 @@ define([],function(){
 			}
 
 			$scope.survey = survey;
+		},function(){
+			$location.path("/surveys");
 		});
+
+		$scope.submitSurvey = function(){
+			var resp = {
+				user:$scope.survey.user,
+				id:$scope.survey.id,
+				questions:[]
+			};
+
+			for (var i = 0; i < $scope.survey.questions.length; i++) {
+				var q = $scope.survey.questions[i];
+				var question = {
+					id:q.id,
+					answer:q.answer
+				};
+				resp.questions.push(question);
+			}
+			SurveyService.post(resp).$promise.then(function(data){
+				// success
+			},function(err){
+				$scope.alerts.push({type: 'warning',msg:err.data});
+			});
+		};
+
+		$scope.closeAlert = function(index){
+			$scope.alerts.splice(index,1);
+		};
 	}];
 
 	return ctlr;

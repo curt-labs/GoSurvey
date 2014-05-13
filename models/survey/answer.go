@@ -15,8 +15,8 @@ var (
 												from SurveyAnswer
 												where questionID = ? && deleted = 0
 												order by date_added`
-	getAnswerRevisions = `select ar.ID as revisionID, qr.new_answer,
-													ar.old_answer, ar.date, ar.changeType,
+	getAnswerRevisions = `select ar.ID as revisionID, IFNULL(ar.new_answer, ""),
+													IFNULL(ar.old_answer, ""), ar.date, ar.changeType,
 													u.id as userID, u.fname, u.lname, u.username
 													from SurveyAnswer_Revisions as ar
 													join admin.user as u on ar.userID = u.id
@@ -59,15 +59,31 @@ type AnswerRevision struct {
 // a Question.
 func (q *Question) AddAnswer(a Answer) error {
 
+	if a.UserID == 0 {
+		return errors.New("invalid user reference")
+	}
+	if a.DataType == "" {
+		return errors.New("data type is required")
+	}
+
 	if a.DataType != "input" && a.Answer == "" {
 		return errors.New("only user input answers can be blank")
 	}
 
+	var err error
 	if a.ID == 0 {
-		return a.insert(q.ID)
+		err = a.insert(q.ID)
+	} else {
+		err = a.update(q.ID)
 	}
 
-	return a.update(q.ID)
+	if err != nil {
+		return err
+	}
+
+	q.Answers = append(q.Answers, a)
+
+	return nil
 }
 
 // answers will push each answer for the
@@ -150,7 +166,7 @@ func (a *Answer) update(questionID int) error {
 		return err
 	}
 
-	_, err = stmt.Exec(a.Answer, a.DataType, a.UserID, questionID)
+	_, err = stmt.Exec(a.Answer, a.DataType, a.UserID, questionID, a.ID)
 
 	return err
 }
