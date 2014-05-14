@@ -34,7 +34,12 @@ func All(rw http.ResponseWriter, req *http.Request, r render.Render) {
 	take, err = strconv.Atoi(params.Get("count"))
 	page, err = strconv.Atoi(params.Get("page"))
 
-	svs, err := survey.GetSurveys(page*take, take)
+	skip := page * take
+	if page > 0 {
+		skip = (page - 1) * take
+	}
+
+	svs, err := survey.GetSurveys(skip, take)
 	if err != nil {
 		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return
