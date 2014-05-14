@@ -9,7 +9,6 @@ require.config({
 		'ngResource': './vendor/angular-resource/angular-resource.min',
 		'ngRoute': './vendor/angular-route/angular-route.min',
 		'jquery': './vendor/jquery/dist/jquery.min',
-		'html5shiv':'./vendor/html5shiv/dist/html5shiv.min',
 		'respondJS': './vendor/respondJS/dest/respond.min',
 		'bootstrap': './vendor/bootstrap/dist/js/bootstrap.min',
 		'nprogress':'./vendor/nprogress/nprogress',
@@ -41,8 +40,7 @@ require([
 	'respondJS',
 	'nprogress',
 	'holder',
-	'angular-alert',
-	'html5shiv'], function(require, $, angular){
+	'angular-alert'], function(require, $, angular){
 		require(['app'],function(app){
 			app.initialize();
 		});
