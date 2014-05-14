@@ -10,5 +10,12 @@
 </div>
 
 <div class="container-fluid">
-	<h1>We made it home!</h1>
+	<h2>Latest Surveys</h2>
+	<ul class="survey-container">
+		<li ng-repeat="survey in surveys">
+			<h3>{{ survey.name }}</h3>
+			<p>{{ survey.description | truncate: 400 }}</p>
+			<a href="/surveys/{{ survey.id }}" class="btn-flat-success">Take Survey</a>
+		</li>
+	</ul>
 </div>
