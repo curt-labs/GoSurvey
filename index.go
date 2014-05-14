@@ -58,8 +58,10 @@ func main() {
 		r.Post("/:id", surveys.Submit)
 	})
 
-	m.Get("/**", func(r render.Render) {
-		r.HTML(200, "index", nil)
+	m.Get("/**", func(rw http.ResponseWriter, req *http.Request, r render.Render) {
+		bag := make(map[string]interface{}, 0)
+		bag["Host"] = req.URL.Host
+		r.HTML(200, "index", bag)
 	})
 
 	srv := &http.Server{
