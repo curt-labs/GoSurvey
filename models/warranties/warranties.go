@@ -16,7 +16,8 @@ var (
 											limit 1`
 	addWarranty = `insert into ActivatedWarranties(fname, lname, email, part)
 									values(?,?,?,?)`
-	deleteWarranty = `delete from ActivatedWarranties where id = ?`
+	deleteWarranty  = `delete from ActivatedWarranties where id = ?`
+	checkPartNumber = `select partID from Part where partID = ? limit 1`
 )
 
 type Warranty struct {
@@ -93,18 +94,41 @@ func (w *Warranty) Get() error {
 
 // Add inserts a new warranty.
 func (w *Warranty) Add() error {
+
+	if w.FirstName == "" {
+		return errors.New("invalid first name")
+	}
+	if w.LastName == "" {
+		return errors.New("invalid last name")
+	}
+	if w.Email == "" {
+		return errors.New("invalid email address")
+	}
+
 	db, err := sql.Open("mysql", database.ConnectionString())
 	if err != nil {
 		return err
 	}
-
 	defer db.Close()
+
+	check, err := db.Prepare(checkPartNumber)
+	if err != nil {
+		return err
+	}
+	defer check.Close()
+
+	var part int
+	check.QueryRow(w.Part).Scan(&part)
+
+	if part == 0 {
+		w.Part = 0
+		return errors.New("invalid part number")
+	}
 
 	stmt, err := db.Prepare(addWarranty)
 	if err != nil {
 		return err
 	}
-
 	defer stmt.Close()
 
 	res, err := stmt.Exec(w.FirstName, w.LastName, w.Email, w.Part)
