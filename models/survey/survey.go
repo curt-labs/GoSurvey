@@ -76,6 +76,10 @@ func GetSurveys(skip, take int) ([]Survey, error) {
 		take = 25
 	}
 
+	if skip > 0 {
+		skip = (skip - 1) * take
+	}
+
 	svs := make([]Survey, 0)
 	var err error
 
@@ -83,14 +87,12 @@ func GetSurveys(skip, take int) ([]Survey, error) {
 	if err != nil {
 		return svs, err
 	}
-
 	defer db.Close()
 
 	stmt, err := db.Prepare(getAllSurveys)
 	if err != nil {
 		return svs, err
 	}
-
 	defer stmt.Close()
 
 	res, err := stmt.Query(skip, take)

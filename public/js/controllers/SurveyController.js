@@ -47,7 +47,8 @@ define([],function(){
 				resp.questions.push(question);
 			}
 			SurveyService.post(resp).$promise.then(function(data){
-				// success
+				$scope.alerts.push({type: 'success', msg: 'Survey has successfully been submit.'});
+				$('.survey-form').find('input,select,textarea').val('');
 			},function(err){
 				$scope.alerts.push({type: 'warning',msg:err.data});
 			});

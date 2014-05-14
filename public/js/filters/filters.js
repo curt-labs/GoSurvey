@@ -1,10 +1,12 @@
 define([
 	'jquery',
-	'filters/truncate'],function($, truncate){
+	'filters/truncate',
+	'filters/range'],function($, truncate, ranger){
 	'use strict';
 
 	var filters = {
-		truncate: truncate
+		truncate: truncate,
+		ranger: ranger
 	};
 
 	var initialize = function(angModule){
