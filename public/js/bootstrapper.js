@@ -40,7 +40,6 @@ require([
 	'bootstrap',
 	'respondJS',
 	'nprogress',
-	'html5shiv',
 	'holder',
 	'angular-alert',
 	'html5shiv'], function(require, $, angular){
