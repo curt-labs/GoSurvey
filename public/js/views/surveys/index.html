@@ -14,14 +14,16 @@
 				</li>
 			</ul>
 
-			<ul class="pagination pagination-sm" ng-if="pages.length<=20">
-				<li><a href="#">&laquo;</a></li>
-				<li ng-repeat="(k,page) in pages track by $index | ranger:pages"><a href="#">{{k+1}}</a></li>
-			</ul>
-			<ul class="pager" ng-if="pages.length>20">
-				<li class="previous" ng-class="isDisabled('newer')" ng-click="previousPage()"><a href="#">&larr; Newer</a></li>
-				<li class="next" ng-class="isDisabled('older')" ng-click="nextPage()"><a href="#">Older &rarr;</a></li>
-			</ul>
+			<div ng-if="pages.length>1">
+				<ul class="pagination pagination-sm" ng-if="pages.length<=20">
+					<li><a href="#">&laquo;</a></li>
+					<li ng-repeat="(k,page) in pages track by $index | ranger:pages"><a href="#">{{k+1}}</a></li>
+				</ul>
+				<ul class="pager" ng-if="pages.length>20">
+					<li class="previous" ng-class="isDisabled('newer')" ng-click="previousPage()"><a href="#">&larr; Newer</a></li>
+					<li class="next" ng-class="isDisabled('older')" ng-click="nextPage()"><a href="#">Older &rarr;</a></li>
+				</ul>
+			</div>
 		</div>
 
 		<!-- Prize -->
