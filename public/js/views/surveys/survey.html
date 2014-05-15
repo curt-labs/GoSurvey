@@ -69,7 +69,7 @@
 		</form> <!-- End .survey-form -->
 		<!-- Prize -->
 		<div class="col-lg-3 col-lg-offset-1" ng-controller="prize">
-			<div class="thumbnail">
+			<div class="thumbnail" ng-if="prize.ID>0">
 				<img alt="Monthly Survey Prize" src="//{{prize.image.Host}}{{prize.image.Path}}">
 				<div class="caption">
 					<h3>{{prize.title}}</h3>
