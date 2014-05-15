@@ -15,7 +15,7 @@ define(['holder'],function(holder){
 			SurveyService.query({page:$scope.current_page},function(surveys){
 				$scope.surveys = surveys.surveys;
 			});
-		}
+		};
 
 		SurveyService.query(function(surveys){
 			$scope.current_page = 0;

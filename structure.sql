@@ -202,3 +202,58 @@ CREATE TABLE `CurtDev`.`SurveyUserAnswer` (
 	CONSTRAINT `Survey_FK` FOREIGN KEY (`surveyID`) REFERENCES `CurtDev`.`Survey` (`id`),
 	CONSTRAINT `SurveyQuestionAnswer_FK` FOREIGN KEY (`questionID`) REFERENCES `CurtDev`.`SurveyQuestion` (`id`)
 ) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=`InnoDB` COMMENT='';
+
+# Survey Prize
+CREATE TABLE `CurtDev`.`SurveyPrize` (
+	`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+	`title` varchar(500),
+	`part` int(11) NOT NULL,
+	`description` varchar(1000),
+	`image` varchar(500),
+	`winner` int(11) UNSIGNED,
+	`date_added` datetime NOT NULL,
+	`date_modified` timestamp NOT NULL ON UPDATE CURRENT_TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	`userID` int(11) NOT NULL,
+	`deleted` tinyint(1) NOT NULL DEFAULT 0,
+	`current` tinyint(1) NOT NULL DEFAULT 0,
+	PRIMARY KEY(`id`)
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=`InnoDB` COMMENT='Prize for survey';
+
+CREATE TABLE `CurtDev`.`SurveyPrize_Revisions`(
+	`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+	`userID` int NOT NULL,
+	`new_title` varchar(500),
+	`old_title` varchar(500),
+	`new_description` varchar(1000),
+	`old_description` varchar(1000),
+	`new_image` varchar(500),
+	`old_image` varchar(500),
+	`date` datetime NOT NULL,
+	`changeType` enum('NEW','EDIT','DELETE') NOT NULL,
+	`prizeID` int(11),
+	PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=`InnoDB` COMMENT='Revisions for SurveyPrize';
+
+delimiter |
+# Triggers for Prize Revision Tracking
+CREATE TRIGGER `SurveyPrize_Insert` AFTER INSERT ON `SurveyPrize` FOR EACH ROW BEGIN
+	IF NEW.deleted THEN SET @changeType = 'DELETE'; ELSE SET @changeType = 'NEW'; END IF;
+
+	INSERT INTO SurveyPrize_Revisions(userID, new_title, new_description, new_image, date, changeType, prizeID)
+	VALUES(NEW.userID, NEW.title, NEW.description, NEW.image, NOW(), @changeType, NEW.id);
+END
+|
+
+CREATE TRIGGER `SurveyPrize_Update` AFTER UPDATE ON `SurveyPrize` FOR EACH ROW BEGIN
+	IF NEW.deleted THEN
+		SET @changeType = 'DELETE';
+	ELSE
+		SET @changeType = 'EDIT';
+	END IF;
+
+	INSERT INTO SurveyPrize_Revisions(userID, new_title, old_title, new_description, old_description, new_image, old_image, date, changeType, prizeID)
+	VALUES(NEW.userID, NEW.title, OLD.title, NEW.description, OLD.description, NEW.image, OLD.image, NOW(), @changeType, NEW.id);
+END
+|
+
+delimiter ;
