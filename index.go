@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"github.com/curt-labs/GoSurvey/controllers/api/prizes"
 	"github.com/curt-labs/GoSurvey/controllers/api/surveys"
 	"github.com/curt-labs/GoSurvey/controllers/api/warranty"
 	"github.com/curt-labs/GoSurvey/models/warranties"
@@ -56,6 +57,12 @@ func main() {
 		r.Get("", surveys.All)
 		r.Get("/:id", surveys.Get)
 		r.Post("/:id", surveys.Submit)
+	})
+
+	m.Group("/api/prize", func(r martini.Router) {
+		r.Get("", prizes.All)
+		r.Get("/current", prizes.Current)
+		r.Get("/:id", prizes.Get)
 	})
 
 	m.Get("/**", func(rw http.ResponseWriter, req *http.Request, r render.Render) {

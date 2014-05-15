@@ -15,6 +15,11 @@ func TestGetters(t *testing.T) {
 			So(len(prizes), ShouldBeLessThan, 6)
 		})
 
+		Convey("Test PrizeCount", func() {
+			total := PrizeCount()
+			So(count, ShouldNotEqual, nil)
+		})
+
 		Convey("Test Current()", func() {
 			p, err := Current()
 			if err != nil {
@@ -114,13 +119,11 @@ func TestInsert(t *testing.T) {
 				So(user.ID, ShouldBeGreaterThan, 0)
 			}
 
-			// Convey("Test GetAll()", func() {
 			_, err = All(1, 0)
 			So(err, ShouldEqual, nil)
 
 			_, err = All(0, 5)
 			So(err, ShouldEqual, nil)
-			// })
 
 			err = p.Delete()
 			So(err, ShouldEqual, nil)

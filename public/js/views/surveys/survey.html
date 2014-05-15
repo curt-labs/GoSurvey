@@ -67,6 +67,16 @@
 				<button type="submit" class="btn btn-success btn-block btn-lg">Submit</button>
 			</div>
 		</form> <!-- End .survey-form -->
+		<!-- Prize -->
+		<div class="col-lg-3 col-lg-offset-1" ng-controller="prize">
+			<div class="thumbnail">
+				<img alt="Monthly Survey Prize" src="//{{prize.image.Host}}{{prize.image.Path}}">
+				<div class="caption">
+					<h3>{{prize.title}}</h3>
+					<p>{{prize.description}}</p>
+				</div>
+			</div>
+		</div>
 	</div>
 </div>
 

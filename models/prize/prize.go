@@ -22,6 +22,7 @@ var (
 								where sp.deleted = 0
 								order by date_modified desc
 								limit ?, ?`
+	getPrizeCount   = `select count(id) as count from SurveyPrize where deleted = 0`
 	getCurrentPrize = `select
 											sp.id, sp.title, sp.part, sp.description, sp.image,
 											sp.date_added, sp.date_modified, sp.userID, sp.deleted, sp.current
@@ -49,7 +50,8 @@ var (
 												from SurveyPrize_Revisions as sr
 												join admin.user as u on sr.userID = u.id
 												where sr.prizeID = ?
-												order by date desc`
+												order by date desc
+												limit 10`
 	insertPrize = `insert into SurveyPrize(title, description, image, date_added, current, part, userID)
 								values(?,?,?,NOW(),?,?,?)`
 	updatePrize = `update SurveyPrize
@@ -61,7 +63,7 @@ var (
 
 type Prize struct {
 	ID           int               `json:"id"`
-	Title        string            `json:"name"`
+	Title        string            `json:"title"`
 	Part         int               `json:"-"`
 	Description  string            `json:"description"`
 	Image        *url.URL          `json:"image"`
@@ -132,6 +134,29 @@ func All(skip, take int) ([]Prize, error) {
 	}
 
 	return prizes, err
+}
+
+func PrizeCount() int {
+	var err error
+
+	db, err := sql.Open("mysql", database.ConnectionString())
+	if err != nil {
+		return 0
+	}
+
+	defer db.Close()
+
+	stmt, err := db.Prepare(getPrizeCount)
+	if err != nil {
+		return 0
+	}
+
+	defer stmt.Close()
+
+	var total int
+	stmt.QueryRow().Scan(&total)
+
+	return total
 }
 
 func Current() (Prize, error) {
@@ -388,10 +413,15 @@ func (p *Prize) revisions() error {
 
 	for res.Next() {
 		var r PrizeRevision
+		var oldUrl string
+		var newUrl string
 		err = res.Scan(&r.ID, &r.ChangeType, &r.Date, &r.NewTitle, &r.OldTitle,
-			&r.NewDescription, &r.OldDescription, &r.NewImage, &r.OldImage,
+			&r.NewDescription, &r.OldDescription, &newUrl, &oldUrl,
 			&r.User.ID, &r.User.FirstName, &r.User.LastName,
 			&r.User.Username)
+
+		r.NewImage, _ = url.Parse(newUrl)
+		r.OldImage, _ = url.Parse(oldUrl)
 		if err == nil {
 			p.Revisions = append(p.Revisions, r)
 		}

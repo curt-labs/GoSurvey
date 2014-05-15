@@ -1,9 +1,13 @@
-define(['jquery', 'services/WarrantyService','services/SurveyService'],function($, ws,ss){
+define(['jquery',
+	'services/WarrantyService',
+	'services/SurveyService',
+	'services/PrizeService'],function($, ws,ss, ps){
 	'use strict';
 
 	var services = {
 		SurveyService: ss,
-		WarrantyService: ws
+		WarrantyService: ws,
+		PrizeService: ps
 	};
 
 	var initialize = function(angModule){
