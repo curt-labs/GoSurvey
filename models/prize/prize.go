@@ -309,7 +309,7 @@ func (p *Prize) Save() error {
 	if p.Current {
 		// Make sure no other surveys are marked as current
 		currentPrize, _ := Current()
-		if currentPrize.ID > 0 {
+		if currentPrize.ID > 0 && currentPrize.ID != p.ID {
 			return errors.New(fmt.Sprintf("%s is marked as the current prize.", currentPrize.Title))
 		}
 	}
