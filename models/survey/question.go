@@ -28,7 +28,7 @@ var (
 										set question = ?, userID = ?, surveyID = ?
 										where id = ?`
 	deleteQuestion = `update SurveyQuestion
-										set deleted = 0, userID = ?
+										set deleted = 1, userID = ?
 										where id = ?`
 )
 
