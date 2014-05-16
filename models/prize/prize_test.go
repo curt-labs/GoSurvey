@@ -17,7 +17,7 @@ func TestGetters(t *testing.T) {
 
 		Convey("Test PrizeCount", func() {
 			total := PrizeCount()
-			So(count, ShouldNotEqual, nil)
+			So(total, ShouldNotEqual, nil)
 		})
 
 		Convey("Test Current()", func() {
@@ -77,6 +77,12 @@ func TestInsert(t *testing.T) {
 
 			p.Title = "Test Prize"
 			p.Description = "Test Description"
+			err = p.Save()
+			So(err, ShouldNotEqual, nil)
+
+			p.Title = "Test Prize"
+			p.Description = "Test Description"
+			p.Image, _ = url.Parse("http://.com")
 			err = p.Save()
 			So(err, ShouldNotEqual, nil)
 

@@ -8,6 +8,7 @@ import (
 	"github.com/curt-labs/GoSurvey/models/survey"
 	_ "github.com/go-sql-driver/mysql"
 	"math/rand"
+	"net/http"
 	"net/url"
 	"time"
 )
@@ -302,6 +303,9 @@ func (p *Prize) Save() error {
 	if p.UserID == 0 {
 		return errors.New("invalid user reference")
 	}
+	if !validateImage(p.Image) {
+		return errors.New("invalid prize image")
+	}
 	if p.Current {
 		// Make sure no other surveys are marked as current
 		currentPrize, _ := Current()
@@ -428,4 +432,16 @@ func (p *Prize) revisions() error {
 	}
 
 	return nil
+}
+
+func validateImage(loc *url.URL) bool {
+	if loc == nil {
+		return false
+	}
+	resp, err := http.Get(loc.String())
+	if err != nil || resp.StatusCode != 200 {
+		return false
+	}
+
+	return true
 }
