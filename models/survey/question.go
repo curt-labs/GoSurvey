@@ -79,6 +79,7 @@ func (s *Survey) AddQuestion(q Question) (Question, error) {
 	}
 
 	for i, answer := range q.Answers {
+		answer.UserID = q.UserID
 		if err = q.AddAnswer(answer); err != nil {
 			q.Answers = append(q.Answers[:i], q.Answers[i+1:]...)
 			return q, err
