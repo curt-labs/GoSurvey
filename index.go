@@ -12,6 +12,7 @@ import (
 	"github.com/martini-contrib/logstasher"
 	"github.com/martini-contrib/render"
 	"github.com/mipearson/rfw"
+	"github.com/yvasiyarov/martini_gorelic"
 	"html/template"
 	"log"
 	"net/http"
@@ -26,6 +27,8 @@ var (
 func main() {
 	flag.Parse()
 	m := martini.Classic()
+	martini_gorelic.InitNewrelicAgent("5fbc49f51bd658d47b4d5517f7a9cb407099c08c", "GoSurvey", true)
+	m.Use(martini_gorelic.Handler)
 	m.Use(gzip.All())
 	m.Use(martini.Static("public"))
 	m.Use(render.Renderer(render.Options{
