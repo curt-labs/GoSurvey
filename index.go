@@ -62,6 +62,14 @@ func main() {
 		r.Post("/:id", surveys.Submit)
 	})
 
+	m.Group("/api/submissions", func(r martini.Router) {
+		// Haven't decide if we want to expose these or not
+		// might want some sort of auth.
+
+		// r.Get("", surveys.AllSubmissions)
+		// r.Get("/:id", surveys.GetSubmissionsBySurvey)
+	})
+
 	m.Group("/api/prize", func(r martini.Router) {
 		r.Get("", prizes.All)
 		r.Get("/current", prizes.Current)

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/curt-labs/GoSurvey/helpers/database"
 	_ "github.com/go-sql-driver/mysql"
+	"time"
 )
 
 var (
@@ -13,7 +14,25 @@ var (
 	deleteUser       = `delete from SurveyUser where id = ?`
 	insertUserAnswer = `insert into SurveyUserAnswer(userID, surveyID, questionID, answer)
 									values(?,?,?,?)`
-	getAllSubmissions = ``
+	getAllSubmissions = `select su.id, su.fname, su.lname, su.email,
+												sua.answer, sq.question, sua.date_answered
+												from SurveyUserAnswer sua
+												join SurveyUser as su on sua.userID = su.id
+												join SurveyQuestion as sq on sua.questionID = sq.id
+												order by su.date_added desc
+												limit ?,?`
+	getAllSubmissionsBySurvey = `select su.id, su.fname, su.lname, su.email,
+												sua.answer, sq.question, sua.date_answered
+												from SurveyUserAnswer sua
+												join SurveyUser as su on sua.userID = su.id
+												join SurveyQuestion as sq on sua.questionID = sq.id
+												where sua.surveyID = ?
+												order by su.date_added desc
+												limit ?,?`
+	getSubmissionCount         = `select count(id) as count from SurveyUser`
+	getSubmissionCountBySurvey = `select count(distinct su.id) as count from SurveyUser as su
+																join SurveyUserAnswer as sua on su.id = sua.userID
+																where sua.surveyID = ?`
 )
 
 type SurveySubmission struct {
@@ -23,18 +42,21 @@ type SurveySubmission struct {
 }
 
 type SurveyUser struct {
-	ID        int    `json:"id"`
-	FirstName string `json:"fname"`
-	LastName  string `json:"lname"`
-	Email     string `json:"email"`
+	ID        int       `json:"id"`
+	FirstName string    `json:"fname"`
+	LastName  string    `json:"lname"`
+	Email     string    `json:"email"`
+	DateAdded time.Time `json:"date_added"`
 }
 
 type SurveySubmissionAnswer struct {
-	ID     int    `json:"id"`
-	Answer string `json:"answer"`
+	ID           int       `json:"id"`
+	Answer       string    `json:"answer"`
+	Question     string    `json:"question"`
+	DateAnswered time.Time `json:"date_answered"`
 }
 
-func GetAllSubmissions(skip, take int) ([]SurveySubmission, error) {
+func GetAllSubmissions(skip, take, surveyID int) ([]SurveySubmission, error) {
 	if take == 0 {
 		take = 25
 	}
@@ -52,26 +74,86 @@ func GetAllSubmissions(skip, take int) ([]SurveySubmission, error) {
 	}
 	defer db.Close()
 
-	stmt, err := db.Prepare(getAllSubmissions)
+	var stmt *sql.Stmt
+	if surveyID == 0 {
+		stmt, err = db.Prepare(getAllSubmissions)
+	} else {
+		stmt, err = db.Prepare(getAllSubmissionsBySurvey)
+	}
+
 	if err != nil {
 		return submissions, err
 	}
 	defer stmt.Close()
 
-	res, err := stmt.Query(skip, take)
+	var res *sql.Rows
+	if surveyID == 0 {
+		res, err = stmt.Query(skip, take)
+	} else {
+		res, err = stmt.Query(surveyID, skip, take)
+	}
 	if err != nil {
 		return submissions, err
 	}
 
-	for res.Next() {
-		var sm SurveySubmission
-		if err = res.Scan(); err == nil {
-			submissions = append(submissions, sm)
-		}
+	indexedSubmissions := make(map[int]SurveySubmission, 0)
 
+	for res.Next() {
+		var ans SurveySubmissionAnswer
+		var user SurveyUser
+
+		if err = res.Scan(&user.ID, &user.FirstName, &user.LastName, &user.Email, &ans.Answer, &ans.Question, &ans.DateAnswered); err == nil {
+			if sm, _ := indexedSubmissions[user.ID]; sm.ID == 0 {
+				indexedSubmissions[user.ID] = SurveySubmission{
+					ID:   user.ID,
+					User: user,
+				}
+			}
+
+			sb := indexedSubmissions[user.ID]
+			sb.Questions = append(sb.Questions, ans)
+			indexedSubmissions[user.ID] = sb
+		}
+	}
+
+	for _, sb := range indexedSubmissions {
+		submissions = append(submissions, sb)
 	}
 
 	return submissions, nil
+}
+
+func SubmissionCount(surveyID int) int {
+	var err error
+
+	db, err := sql.Open("mysql", database.ConnectionString())
+	if err != nil {
+		return 0
+	}
+
+	defer db.Close()
+
+	var stmt *sql.Stmt
+	if surveyID == 0 {
+		stmt, err = db.Prepare(getSubmissionCount)
+	} else {
+		stmt, err = db.Prepare(getSubmissionCountBySurvey)
+	}
+
+	if err != nil {
+		return 0
+	}
+
+	defer stmt.Close()
+
+	var total int
+	if surveyID == 0 {
+		stmt.QueryRow().Scan(&total)
+	} else {
+		stmt.QueryRow(surveyID).Scan(&total)
+	}
+
+	return total
 }
 
 func (s *SurveySubmission) Submit() error {
