@@ -14,14 +14,14 @@ var (
 	deleteUser       = `delete from SurveyUser where id = ?`
 	insertUserAnswer = `insert into SurveyUserAnswer(userID, surveyID, questionID, answer)
 									values(?,?,?,?)`
-	getAllSubmissions = `select su.id, su.fname, su.lname, su.email,
+	getAllSubmissions = `select su.id, su.fname, su.lname, su.email, su.date_added,
 												sua.answer, sq.question, sua.date_answered, sua.surveyID
 												from SurveyUserAnswer sua
 												join SurveyUser as su on sua.userID = su.id
 												join SurveyQuestion as sq on sua.questionID = sq.id
 												order by su.date_added desc
 												limit ?,?`
-	getAllSubmissionsBySurvey = `select su.id, su.fname, su.lname, su.email,
+	getAllSubmissionsBySurvey = `select su.id, su.fname, su.lname, su.email, su.date_added,
 												sua.answer, sq.question, sua.date_answered, sua.surveyID
 												from SurveyUserAnswer sua
 												join SurveyUser as su on sua.userID = su.id
@@ -33,6 +33,10 @@ var (
 	getSubmissionCountBySurvey = `select count(distinct su.id) as count from SurveyUser as su
 																join SurveyUserAnswer as sua on su.id = sua.userID
 																where sua.surveyID = ?`
+)
+
+const (
+	TIME_LAYOUT = "2006-01-02 15:04:05 MST"
 )
 
 type SurveySubmission struct {
@@ -104,8 +108,9 @@ func GetAllSubmissions(skip, take, surveyID int) ([]SurveySubmission, error) {
 		var user SurveyUser
 		var s Survey
 
-		if err = res.Scan(&user.ID, &user.FirstName, &user.LastName, &user.Email, &ans.Answer, &ans.Question, &ans.DateAnswered, &s.ID); err == nil {
+		if err = res.Scan(&user.ID, &user.FirstName, &user.LastName, &user.Email, &user.DateAdded, &ans.Answer, &ans.Question, &ans.DateAnswered, &s.ID); err == nil {
 			if sm, _ := indexedSubmissions[user.ID]; sm.ID == 0 {
+
 				ss := SurveySubmission{
 					ID:   user.ID,
 					User: user,
