@@ -46,8 +46,8 @@
 					<div ng-if="question.selects != undefined">
 						<div class="form-group col-lg-6">
 							<select required name="{{question.id}}" class="form-control" ng-model="question.answer">
-								<option value="">-- Select Anser --</option>
-								<option ng-repeat="select in question.selects" value="{{select.id}}">{{select.answer}}</option>
+								<option value="">-- Select Answer --</option>
+								<option ng-repeat="select in question.selects" value="{{select.answer}}">{{select.answer}}</option>
 							</select>
 						</div>
 						<div class="form-group row">

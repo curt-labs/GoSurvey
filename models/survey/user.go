@@ -13,6 +13,7 @@ var (
 	deleteUser       = `delete from SurveyUser where id = ?`
 	insertUserAnswer = `insert into SurveyUserAnswer(userID, surveyID, questionID, answer)
 									values(?,?,?,?)`
+	getAllSubmissions = ``
 )
 
 type SurveySubmission struct {
@@ -31,6 +32,46 @@ type SurveyUser struct {
 type SurveySubmissionAnswer struct {
 	ID     int    `json:"id"`
 	Answer string `json:"answer"`
+}
+
+func GetAllSubmissions(skip, take int) ([]SurveySubmission, error) {
+	if take == 0 {
+		take = 25
+	}
+
+	if skip > 0 {
+		skip = (skip - 1) * take
+	}
+
+	submissions := make([]SurveySubmission, 0)
+	var err error
+
+	db, err := sql.Open("mysql", database.ConnectionString())
+	if err != nil {
+		return submissions, err
+	}
+	defer db.Close()
+
+	stmt, err := db.Prepare(getAllSubmissions)
+	if err != nil {
+		return submissions, err
+	}
+	defer stmt.Close()
+
+	res, err := stmt.Query(skip, take)
+	if err != nil {
+		return submissions, err
+	}
+
+	for res.Next() {
+		var sm SurveySubmission
+		if err = res.Scan(); err == nil {
+			submissions = append(submissions, sm)
+		}
+
+	}
+
+	return submissions, nil
 }
 
 func (s *SurveySubmission) Submit() error {
@@ -54,9 +95,9 @@ func (s *SurveySubmission) Submit() error {
 	ch := make(chan error)
 
 	for _, question := range s.Questions {
-		go func(ss *SurveySubmission) {
-			ch <- question.save(ss.User.ID, ss.ID)
-		}(s)
+		go func(ss *SurveySubmission, q SurveySubmissionAnswer) {
+			ch <- q.save(ss.User.ID, ss.ID)
+		}(s, question)
 	}
 
 	for _, _ = range s.Questions {
