@@ -15,14 +15,14 @@ var (
 	insertUserAnswer = `insert into SurveyUserAnswer(userID, surveyID, questionID, answer)
 									values(?,?,?,?)`
 	getAllSubmissions = `select su.id, su.fname, su.lname, su.email,
-												sua.answer, sq.question, sua.date_answered
+												sua.answer, sq.question, sua.date_answered, sua.surveyID
 												from SurveyUserAnswer sua
 												join SurveyUser as su on sua.userID = su.id
 												join SurveyQuestion as sq on sua.questionID = sq.id
 												order by su.date_added desc
 												limit ?,?`
 	getAllSubmissionsBySurvey = `select su.id, su.fname, su.lname, su.email,
-												sua.answer, sq.question, sua.date_answered
+												sua.answer, sq.question, sua.date_answered, sua.surveyID
 												from SurveyUserAnswer sua
 												join SurveyUser as su on sua.userID = su.id
 												join SurveyQuestion as sq on sua.questionID = sq.id
@@ -39,6 +39,7 @@ type SurveySubmission struct {
 	ID        int                      `json:"id"`
 	User      SurveyUser               `json:"user"`
 	Questions []SurveySubmissionAnswer `json:"questions"`
+	Survey    Survey                   `json:"survey"`
 }
 
 type SurveyUser struct {
@@ -101,13 +102,19 @@ func GetAllSubmissions(skip, take, surveyID int) ([]SurveySubmission, error) {
 	for res.Next() {
 		var ans SurveySubmissionAnswer
 		var user SurveyUser
+		var s Survey
 
-		if err = res.Scan(&user.ID, &user.FirstName, &user.LastName, &user.Email, &ans.Answer, &ans.Question, &ans.DateAnswered); err == nil {
+		if err = res.Scan(&user.ID, &user.FirstName, &user.LastName, &user.Email, &ans.Answer, &ans.Question, &ans.DateAnswered, &s.ID); err == nil {
 			if sm, _ := indexedSubmissions[user.ID]; sm.ID == 0 {
-				indexedSubmissions[user.ID] = SurveySubmission{
+				ss := SurveySubmission{
 					ID:   user.ID,
 					User: user,
 				}
+
+				if err := s.Get(); err == nil {
+					ss.Survey = s
+				}
+				indexedSubmissions[user.ID] = ss
 			}
 
 			sb := indexedSubmissions[user.ID]
