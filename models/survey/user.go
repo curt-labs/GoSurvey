@@ -33,6 +33,12 @@ var (
 	getSubmissionCountBySurvey = `select count(distinct su.id) as count from SurveyUser as su
 																join SurveyUserAnswer as sua on su.id = sua.userID
 																where sua.surveyID = ?`
+	getSubmission = `select su.id, su.fname, su.lname, su.email, su.date_added,
+												sua.answer, sq.question, sua.date_answered, sua.surveyID
+												from SurveyUserAnswer sua
+												join SurveyUser as su on sua.userID = su.id
+												join SurveyQuestion as sq on sua.questionID = sq.id
+												where su.id = ?`
 )
 
 const (
@@ -166,6 +172,46 @@ func SubmissionCount(surveyID int) int {
 	}
 
 	return total
+}
+
+func (s *SurveySubmission) Get() error {
+
+	var err error
+
+	db, err := sql.Open("mysql", database.ConnectionString())
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+
+	stmt, err := db.Prepare(getSubmission)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	res, err := stmt.Query(s.ID)
+	if err != nil {
+		return err
+	}
+
+	for res.Next() {
+		var ans SurveySubmissionAnswer
+		var sur Survey
+
+		if err = res.Scan(&s.User.ID, &s.User.FirstName, &s.User.LastName, &s.User.Email, &s.User.DateAdded, &ans.Answer, &ans.Question, &ans.DateAnswered, &sur.ID); err == nil {
+
+			if sur.Name == "" {
+				if err := sur.Get(); err == nil {
+					s.Survey = sur
+				}
+			}
+
+			s.Questions = append(s.Questions, ans)
+		}
+	}
+
+	return nil
 }
 
 func (s *SurveySubmission) Submit() error {
