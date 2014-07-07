@@ -129,7 +129,7 @@ html,body{
 		h1,p{
 			font-weight:300px;
 			line-height:1.4em;
-			float: left;
+			// float: left;
 			margin:0;
 			padding:5px 15px;
 			background:rgba(0,0,0,0.7);
@@ -159,17 +159,35 @@ html,body{
 	.survey-container{
 		@include flexbox();
 		flex-flow: row wrap;
+		padding:0;
 		li{
 			@include flex(1 250px);
 			@include order(2);
 			list-style:none;
 			padding:0 10px;
+			position:relative;
 
 			h3{
 				line-height: 1.019em;
 				font-size:1.95em;
 				border-bottom: 2px solid $heading-border;
 			}
+
+			.btn-flat-success{
+				// position:absolute;
+				// bottom:0;
+				// width:90%;
+			}
+		}
+	}
+
+	.question{
+		padding: 10px 0;
+		.text{
+			margin-bottom:10px;
+			font-size: 16px;
+			font-weight:400;
+			border-bottom: 1px solid #eaeaea;
 		}
 	}
 }

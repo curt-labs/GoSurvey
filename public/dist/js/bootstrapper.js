@@ -3,10 +3,10 @@
 require.config({
 	paths: {
 		'angular': './vendor/angular/angular.min',
+		'angular-alert':'./vendor/angular-ui-bootstrap/src/alert/alert',
 		'ngResource': './vendor/angular-resource/angular-resource.min',
 		'ngRoute': './vendor/angular-route/angular-route.min',
 		'jquery': './vendor/jquery/dist/jquery.min',
-		'html5shiv':'./vendor/html5shiv/dist/html5shiv.min',
 		'respondJS': './vendor/respondJS/dest/respond.min',
 		'bootstrap': './vendor/bootstrap/dist/js/bootstrap.min',
 		'nprogress':'./vendor/nprogress/nprogress',
@@ -23,10 +23,11 @@ require.config({
 		},
 		'bootstrap':['jquery'],
 		'ngRoute':['angular'],
-		'ngResource': ['angular']
+		'ngResource': ['angular'],
+		'angular-alert':['angular']
 	},
 	waitSeconds: 15,
-	urlArgs: 'bust=v0.1.0'
+	urlArgs: 'bust=v0.1.1'
 });
 
 require([
@@ -37,7 +38,7 @@ require([
 	'respondJS',
 	'nprogress',
 	'holder',
-	'html5shiv'], function(require, $, angular){
+	'angular-alert'], function(require, $, angular){
 		require(['app'],function(app){
 			app.initialize();
 		});

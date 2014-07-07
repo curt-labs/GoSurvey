@@ -6,14 +6,20 @@ define([
 	'controllers/HomeController',
 	'controllers/WarrantyController',
 	'controllers/SurveysController',
-	'controllers/SurveyController'],
-	function($, NProgress, routes, app, home, warranty, surveys, survey){
+	'controllers/SurveyController',
+	'controllers/PolicyController',
+	'controllers/TermsController',
+	'controllers/PrizeController'],
+	function($, NProgress, routes, app, home, warranty, surveys, survey, policy, terms, prize){
 
 		var controllers = {
 			home: home,
 			warranty: warranty,
 			surveys: surveys,
-			survey: survey
+			survey: survey,
+			policy: policy,
+			terms: terms,
+			prize: prize
 		};
 
 		var setUpRoutes = function(angModule){

@@ -1,6 +1,83 @@
 <div class="container">
 	<h1>{{ survey.name }}</h1>
 	<p>{{ survey.description }}</p>
+
+	<script id="template/alert/alert.html" type="text/ng-template">
+		<div class="alert" ng-class="{'alert-{{type || 'warning'}}': true, 'alert-dismissable': closeable}" role="alert">
+			<button ng-show="closeable" type="button" class="close" ng-click="close()">
+				<span aria-hidden="true">&times;</span>
+				<span class="sr-only">Close</span>
+			</button>
+			<div ng-transclude></div>
+		</div>
+	</script>
+
+	<div class="alerts">
+		<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+	</div>
+
+	<div class="row">
+		<form ng-submit="submitSurvey()" class="survey-form form-horizontal col-lg-7" data-id="{{survey.id}}" role="form">
+			<!-- User Name -->
+			<div class="question">
+				<p class="text">Name</p>
+				<div class="form-group row">
+					<div class="col-sm-3">
+						<input type="text" required class="form-control" ng-model="survey.user.fname" id="fname" placeholder="First name">
+					</div>
+					<div class="col-sm-4">
+						<input type="text" required class="form-control" ng-model="survey.user.lname" id="lname" placeholder="Last name">
+					</div>
+				</div>
+			</div>
+			<div class="question">
+				<p class="text">E-mail Address</p>
+				<div class="form-group row">
+					<div class="col-sm-10">
+						<input type="text" required class="form-control" ng-model="survey.user.email" id="email" placeholder="E-mail address">
+					</div>
+				</div>
+			</div>
+
+			<div class="question" ng-repeat="question in survey.questions">
+				<p class="text">{{ question.question }}</p>
+
+				<div ng-switch on="question">
+					<div ng-if="question.selects != undefined">
+						<div class="form-group col-lg-6">
+							<select required name="{{question.id}}" class="form-control" ng-model="question.answer">
+								<option value="">-- Select Answer --</option>
+								<option ng-repeat="select in question.selects" value="{{select.answer}}">{{select.answer}}</option>
+							</select>
+						</div>
+						<div class="form-group row">
+							<div class="form-control col-lg-6" ng-repeat="answer in question.answers">
+								<input required class="form-control" ng-model="question.answer" ng-repeat="answer in question.answers" name="{{question.id}}" placeholder="Enter answer..." type="{{answer.data_type}}">
+							</div>
+						</div>
+					</div>
+					<div ng-if="question.selects == undefined" class="row">
+						<div class="col-lg-6">
+							<input required class="form-control" ng-model="question.answer" ng-repeat="answer in question.answers" type="{{answer.data_type}}" name="{{question.id}}" placeholder="Enter answer...">
+						</div>
+					</div>
+				</div>
+			</div> <!-- End .questions -->
+			<div class="form-group">
+				<button type="submit" class="btn btn-success btn-block btn-lg">Submit</button>
+			</div>
+		</form> <!-- End .survey-form -->
+		<!-- Prize -->
+		<div class="col-lg-3 col-lg-offset-1" ng-controller="prize">
+			<div class="thumbnail" ng-if="prize.ID>0">
+				<img alt="Monthly Survey Prize" src="//{{prize.image.Host}}{{prize.image.Path}}">
+				<div class="caption">
+					<h3>{{prize.title}}</h3>
+					<p>{{prize.description}}</p>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 
 

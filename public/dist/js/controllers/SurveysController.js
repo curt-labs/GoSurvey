@@ -1,25 +1,29 @@
 define(['holder'],function(holder){
 	
 
-	var ctlr = ['$scope', '$route',function($scope, $route){
+	var ctlr = ['$scope', '$route', 'SurveyService',function($scope, $route, SurveyService){
 		holder.run();
-		$scope.surveys = [{
-			ID: 1,
-			name: "Example Survey",
-			description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
-		},{
-			ID: 2,
-			name: "Example Survey",
-			description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
-		},{
-			ID: 3,
-			name: "Example Survey",
-			description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
-		},{
-			ID: 4,
-			name: "Example Survey",
-			description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
-		}];
+		$scope.isDisabled = function(dir){
+			if(dir === 'newer' && $scope.current_page === 1){
+				return 'disabled';
+			}else if(dir === 'older' && $scope.current_page == $scope.pages.length){
+				return 'disabled';
+			}
+		};
+		$scope.nextPage = function(){
+			$scope.current_page++;
+			SurveyService.query({page:$scope.current_page},function(surveys){
+				$scope.surveys = surveys.surveys;
+			});
+		};
+
+		SurveyService.query(function(surveys){
+			$scope.current_page = 0;
+			var len = Math.ceil(surveys.total_surveys / surveys.total_results);
+			$scope.pages = new Array(len);
+			$scope.surveys = surveys.surveys;
+			$scope.current_page++;
+		});
 	}];
 
 	return ctlr;

@@ -1,11 +1,62 @@
 define([],function(){
 	
 
-	var ctlr = ['$scope', '$route',function($scope, $route){
-		$scope.survey = {
-			ID: 1,
-			name: "Example Survey",
-			description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+	var ctlr = ['$scope',
+		'$route',
+		'$routeParams',
+		'$http',
+		'$location',
+		'SurveyService',
+	function($scope, $route, $routeParams, $http, $location, SurveyService){
+		$scope.alerts = [];
+		SurveyService.get({id: $routeParams.id}, function(survey){
+			for (var i = 0; i < survey.questions.length; i++) {
+				var answers = [];
+				for (var j = 0; j < survey.questions[i].answers.length; j++) {
+					var ans = survey.questions[i].answers[j];
+					if(ans.data_type == 'multiple'){
+						if(survey.questions[i].selects === undefined){
+							survey.questions[i].selects = [];
+						}
+						survey.questions[i].selects.push(ans);
+					}else{
+						answers.push(ans);
+					}
+				}
+				survey.questions[i].answers = answers;
+			}
+
+			$scope.survey = survey;
+		},function(){
+			$location.path("/surveys");
+		});
+
+		$scope.submitSurvey = function(){
+			var resp = {
+				user:$scope.survey.user,
+				id:$scope.survey.id,
+				questions:[]
+			};
+
+			for (var i = 0; i < $scope.survey.questions.length; i++) {
+				var q = $scope.survey.questions[i];
+				var question = {
+					id:q.id,
+					answer:q.answer
+				};
+				resp.questions.push(question);
+			}
+			$scope.alerts = [];
+			SurveyService.post(resp).$promise.then(function(data){
+				$scope.alerts.push({type: 'success', msg: 'Survey has successfully been submitted.'});
+				$('.survey-form').find('input,select,textarea').val('');
+			},function(err){
+				$scope.alerts.push({type: 'warning',msg:err.data});
+			});
+		};
+
+		$scope.closeAlert = function(index){
+			$scope.alerts.splice(index,1);
 		};
 	}];
 

@@ -1,4 +1,4 @@
-/*! GoSurvey 2014-05-05 - Alex Ninneman */
+/*! GoSurvey 2014-07-07 - Alex Ninneman */
 
 /*! normalize.css v3.0.1 | MIT License | git.io/normalize */
 /* line 9, ../js/vendor/bootstrap-sass-official/vendor/assets/stylesheets/bootstrap/_normalize.scss */
@@ -7989,7 +7989,6 @@ html, body {
 .home-header .jumbotron h1, .home-header .jumbotron p {
   font-weight: 300px;
   line-height: 1.4em;
-  float: left;
   margin: 0;
   padding: 5px 15px;
   background: rgba(0, 0, 0, 0.7);
@@ -8023,8 +8022,9 @@ html, body {
   display: -webkit-flex;
   display: flex;
   flex-flow: row wrap;
+  padding: 0;
 }
-/* line 162, ../sass/main.scss */
+/* line 163, ../sass/main.scss */
 .data-view .survey-container li {
   -webkit-box-flex: 1 250px;
   -moz-box-flex: 1 250px;
@@ -8038,15 +8038,27 @@ html, body {
   order: 2;
   list-style: none;
   padding: 0 10px;
+  position: relative;
 }
-/* line 168, ../sass/main.scss */
+/* line 170, ../sass/main.scss */
 .data-view .survey-container li h3 {
   line-height: 1.019em;
   font-size: 1.95em;
   border-bottom: 2px solid #eaeaea;
 }
+/* line 184, ../sass/main.scss */
+.data-view .question {
+  padding: 10px 0;
+}
+/* line 186, ../sass/main.scss */
+.data-view .question .text {
+  margin-bottom: 10px;
+  font-size: 16px;
+  font-weight: 400;
+  border-bottom: 1px solid #eaeaea;
+}
 
-/* line 177, ../sass/main.scss */
+/* line 195, ../sass/main.scss */
 footer {
   padding: 20px 10px;
   background: #222222;
@@ -8055,18 +8067,18 @@ footer {
   font-size: 12px;
   min-height: 200px;
 }
-/* line 187, ../sass/main.scss */
+/* line 205, ../sass/main.scss */
 footer address img {
   margin: 5px 0;
   display: block;
   width: 150px;
 }
-/* line 195, ../sass/main.scss */
+/* line 213, ../sass/main.scss */
 footer .nav li > a, footer .nav li.active > a {
   background: none;
   color: #fff;
 }
-/* line 198, ../sass/main.scss */
+/* line 216, ../sass/main.scss */
 footer .nav li > a:hover, footer .nav li > a:visited, footer .nav li.active > a:hover, footer .nav li.active > a:visited {
   color: #fff;
   background: none;
@@ -8074,18 +8086,18 @@ footer .nav li > a:hover, footer .nav li > a:visited, footer .nav li.active > a:
 
 /* Small devices (tablets, 768px and down) */
 @media (max-width: 768px) {
-  /* line 210, ../sass/main.scss */
+  /* line 228, ../sass/main.scss */
   .navbar .container .navbar-collapse {
     float: none !important;
     font-size: 18px;
   }
 
-  /* line 217, ../sass/main.scss */
+  /* line 235, ../sass/main.scss */
   .home-header {
     height: 600px;
   }
 
-  /* line 222, ../sass/main.scss */
+  /* line 240, ../sass/main.scss */
   footer .row {
     display: -webkit-box;
     display: -moz-box;
@@ -8094,7 +8106,7 @@ footer .nav li > a:hover, footer .nav li > a:visited, footer .nav li.active > a:
     display: flex;
     flex-flow: row wrap;
   }
-  /* line 225, ../sass/main.scss */
+  /* line 243, ../sass/main.scss */
   footer .row > div:nth-child(1) {
     -webkit-box-flex: 1 auto;
     -moz-box-flex: 1 auto;
@@ -8107,17 +8119,17 @@ footer .nav li > a:hover, footer .nav li > a:visited, footer .nav li.active > a:
     -webkit-order: 1;
     order: 1;
   }
-  /* line 228, ../sass/main.scss */
+  /* line 246, ../sass/main.scss */
   footer .row > div:nth-child(1) img {
     float: left;
     margin-bottom: 10px;
   }
-  /* line 232, ../sass/main.scss */
+  /* line 250, ../sass/main.scss */
   footer .row > div:nth-child(1) .body {
     float: left;
     margin-left: 10px;
   }
-  /* line 237, ../sass/main.scss */
+  /* line 255, ../sass/main.scss */
   footer .row > div:nth-child(2) {
     -webkit-box-flex: 1 auto;
     -moz-box-flex: 1 auto;
@@ -8131,11 +8143,11 @@ footer .nav li > a:hover, footer .nav li > a:visited, footer .nav li.active > a:
     order: 0;
     margin-bottom: 20px;
   }
-  /* line 242, ../sass/main.scss */
+  /* line 260, ../sass/main.scss */
   footer .row > div:nth-child(2) ul {
     float: none !important;
   }
-  /* line 244, ../sass/main.scss */
+  /* line 262, ../sass/main.scss */
   footer .row > div:nth-child(2) ul li {
     width: 33%;
     text-align: center;
@@ -8144,21 +8156,21 @@ footer .nav li > a:hover, footer .nav li > a:visited, footer .nav li.active > a:
 }
 /* Small devices (tablets, 768px and up) */
 @media (min-width: 768px) {
-  /* line 259, ../sass/main.scss */
+  /* line 277, ../sass/main.scss */
   .navbar .container .navbar-collapse {
     font-size: 16px;
   }
 }
 /* Medium devices (desktops, 992px and up) */
 @media (min-width: 992px) {
-  /* line 270, ../sass/main.scss */
+  /* line 288, ../sass/main.scss */
   .navbar .container .navbar-collapse {
     float: right !important;
   }
 }
 /* Large devices (large desktops, 1200px and up) */
 @media (min-width: 1200px) {
-  /* line 281, ../sass/main.scss */
+  /* line 299, ../sass/main.scss */
   .navbar .container .navbar-collapse {
     float: right !important;
   }
