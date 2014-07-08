@@ -48,7 +48,8 @@ define([],function(){
 			}
 			$scope.alerts = [];
 			SurveyService.post(resp).$promise.then(function(data){
-				$scope.alerts.push({type: 'success', msg: 'Survey has successfully been submitted.'});
+				$scope.alerts.push({type: 'success', msg: 'Thank you for taking the time to fill out this survey, your answers have been successfully submitted.'});
+				window.scrollTo(0, 0);
 				$('.survey-form').find('input,select,textarea').val('');
 			},function(err){
 				$scope.alerts.push({type: 'warning',msg:err.data});
