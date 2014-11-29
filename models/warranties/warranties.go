@@ -17,7 +17,7 @@ var (
 	addWarranty = `insert into ActivatedWarranties(fname, lname, email, part)
 									values(?,?,?,?)`
 	deleteWarranty  = `delete from ActivatedWarranties where id = ?`
-	checkPartNumber = `select partID from Part where partID = ? limit 1`
+	checkPartNumber = `select partID from Part where partID = ? && brandID = 1 limit 1`
 )
 
 type Warranty struct {
