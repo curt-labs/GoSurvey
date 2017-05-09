@@ -24,7 +24,6 @@ _testmain.go
 
 .sass-cache
 node_modules
-watcher.go
 index
 *.log
 requests.log
