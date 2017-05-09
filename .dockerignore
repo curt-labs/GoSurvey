@@ -1,0 +1,2 @@
+# ignore watcher file, only used for grunt and causes duplicate main package error
+watcher.go

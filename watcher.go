@@ -2,12 +2,13 @@ package main
 
 import (
 	"fmt"
-	"github.com/str1ngs/util/file"
 	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"time"
+
+	"github.com/str1ngs/util/file"
 )
 
 var (
