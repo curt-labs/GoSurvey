@@ -3,9 +3,10 @@ package survey
 import (
 	"database/sql"
 	"errors"
+	"time"
+
 	"github.com/curt-labs/GoSurvey/helpers/database"
 	_ "github.com/go-sql-driver/mysql"
-	"time"
 )
 
 var (
@@ -19,8 +20,7 @@ var (
 												from SurveyUserAnswer sua
 												join SurveyUser as su on sua.userID = su.id
 												join SurveyQuestion as sq on sua.questionID = sq.id
-												order by su.date_added desc
-												limit ?,?`
+												order by su.date_added desc`
 	getAllSubmissionsBySurvey = `select su.id, su.fname, su.lname, su.email, su.date_added,
 												sua.answer, sq.question, sua.date_answered, sua.surveyID
 												from SurveyUserAnswer sua
@@ -99,7 +99,7 @@ func GetAllSubmissions(skip, take, surveyID int) ([]SurveySubmission, error) {
 
 	var res *sql.Rows
 	if surveyID == 0 {
-		res, err = stmt.Query(skip, take)
+		res, err = stmt.Query()
 	} else {
 		res, err = stmt.Query(surveyID, skip, take)
 	}
