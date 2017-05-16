@@ -4,12 +4,11 @@
 	<div class="row">
 		<!-- Surveys -->
 		<div class="col-lg-9">
-			<p class="lead">At CURT, customer is key. We value your feedback and we use that information to make improvements on our products. Please, take a minute and let us know how we’re doing.</p>
+			<p class="lead">CURT stands behind our products with industry leading warranties. You can help us continue to improve our product line and help us understand your needs by registering your purchase using the form below.<br /> <br />At CURT, customer is key. We value your feedback and we use that information to make improvements on our products. Please, take a minute and let us know how we’re doing.</p>
 
 			<ul class="survey-container">
 				<li ng-repeat="survey in surveys">
 					<h3>{{ survey.name }}</h3>
-					<p>{{ survey.description | truncate: 400 }}</p>
 					<a href="/surveys/{{ survey.id }}" class="btn-flat-success">Complete Warranty</a>
 				</li>
 			</ul>
