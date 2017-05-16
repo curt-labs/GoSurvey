@@ -231,7 +231,6 @@ func (s *SurveySubmission) Submit() error {
 	if err := s.User.save(); err != nil {
 		return err
 	}
-
 	ch := make(chan error)
 
 	for _, question := range s.Questions {

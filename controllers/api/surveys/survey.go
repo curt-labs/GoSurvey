@@ -2,11 +2,14 @@ package surveys
 
 import (
 	"encoding/json"
+	"fmt"
+	"net/http"
+	"strconv"
+
+	"github.com/curt-labs/GoSurvey/helpers/email"
 	"github.com/curt-labs/GoSurvey/models/survey"
 	"github.com/go-martini/martini"
 	"github.com/martini-contrib/render"
-	"net/http"
-	"strconv"
 )
 
 type SurveyError struct {
@@ -86,6 +89,49 @@ func Submit(rw http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return
+	}
+	// assign the survey userID to get the correct submitted survey
+	s.ID = s.User.ID
+	// reset the questions so duplicates are not shown in the email
+	s.Questions = nil
+	// get the survey submission
+	err = s.Get()
+	if err != nil {
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
+	}
+	// send email to user filling out form.
+	if s.User.Email != "" {
+		tos := []string{s.User.Email}
+		subject := "Warranty Confirmation"
+		body := "<html><head>"
+		body += `
+		<style>
+			table {
+				border-collapse: collapse;
+			}
+
+			table, th, td {
+				border:1px solid #bbb;
+				padding:5px;
+			}
+		}
+		</style>
+		`
+		body += "</head><body>"
+		body += "<html><h3>Thank you for filling out your Warranty</h3>"
+		body += "<p><strong>Provided below is a copy of your warranty questionnaire:</strong></p>"
+		body += "<table><tr><th>Queston</th><th>Answer</th></tr>"
+		for _, surv := range s.Questions {
+			body += fmt.Sprintf("<tr><td>%s</td><td>%s</td></tr>", surv.Question, surv.Answer)
+		}
+		body += "</table>"
+		body += `<p>If you have any questions or concerns about the information above, please contact <a href="mailto:helpdesk@curtmfg.com">Customer Service</a></p>`
+		body += "</body></html>"
+		err = email.Send(tos, subject, body, true)
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}
 
 	success := struct {

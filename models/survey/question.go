@@ -3,9 +3,10 @@ package survey
 import (
 	"database/sql"
 	"errors"
+	"time"
+
 	"github.com/curt-labs/GoSurvey/helpers/database"
 	_ "github.com/go-sql-driver/mysql"
-	"time"
 )
 
 // SQL Statements
@@ -158,6 +159,11 @@ func (q *Question) update(surveyID int) error {
 	return err
 }
 
+// public getter for questions
+func (s *Survey) GetQuestions() error {
+	return s.questions()
+}
+
 // questions will retrieve all possible questions
 // for the referenced Survey.
 func (s *Survey) questions() error {
@@ -192,6 +198,10 @@ func (s *Survey) questions() error {
 	}
 
 	return nil
+}
+
+func (q *Question) GetRevisions() error {
+	return q.revisions()
 }
 
 // revisions will retrieve all revision history
