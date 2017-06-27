@@ -1,15 +1,5 @@
 /*! GoSurvey 2017-06-27 - Alex Ninneman */
 
-/*! GoSurvey 2017-06-27 - Alex Ninneman */
-
-/*! GoSurvey 2017-06-27 - Alex Ninneman */
-
-/*! GoSurvey 2017-06-27 - Alex Ninneman */
-
-/*! GoSurvey 2017-06-27 - Alex Ninneman */
-
-/*! GoSurvey 2017-06-27 - Alex Ninneman */
-
 @charset "UTF-8";
 /*! normalize.css v3.0.1 | MIT License | git.io/normalize */
 /* line 9, ../js/vendor/bootstrap-sass-official/vendor/assets/stylesheets/bootstrap/_normalize.scss */
@@ -7985,7 +7975,7 @@ html, body {
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
-  height: 735px;
+  height: 500px;
   margin: 0;
 }
 /* line 129, ../sass/main.scss */
