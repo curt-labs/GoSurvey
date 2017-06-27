@@ -103,11 +103,13 @@ html,body{
 
 .navbar{
 	margin-bottom:0;
+	min-height:100px;
+	padding-top:15px;
 	.container{
 		margin:auto;
 
 		.navbar-brand {
-			padding: 17.5px 15px;
+			padding: 10px 15px;
 			img{
 				width: 330px;
 			}
@@ -121,7 +123,7 @@ html,body{
 	-moz-background-size: cover;
 	-o-background-size: cover;
 	background-size: cover;
-	height: 735px;
+	height: 500px;
 	margin:0;
 
 	.jumbotron{
@@ -193,7 +195,7 @@ html,body{
 }
 
 footer{
-	padding: 20px 10px;
+	padding: 40px 10px;
 	background:$dark-color;
 	color:#ffffff;
 	font-weight:400;
@@ -202,10 +204,15 @@ footer{
 
 	address{
 		// text-align: right;
+		max-width:300px;
 		img{
 			margin: 5px 0;
-			display:block;
+			display:inline-block;
 			width:150px;
+		}
+		.body {
+			display:inline-block;
+			float:right;
 		}
 	}
 
@@ -246,17 +253,20 @@ footer{
 				img{
 					float:left;
 					margin-bottom:10px;
+					display:inline-block;;
 				}
 				.body{
 					float:left;
 					margin-left: 10px;
+					display:inline-block;
+					float:right;
 				}
 			}
 			> div:nth-child(2){
 				@include flex(1 auto);
 				@include order(0);
 				margin-bottom: 20px;
-
+				max-width:300px;
 				ul{
 					float:none !important;
 					li{
