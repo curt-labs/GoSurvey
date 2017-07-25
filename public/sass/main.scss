@@ -103,7 +103,7 @@ html,body{
 
 .navbar{
 	margin-bottom:0;
-	min-height:100px;
+	min-height:150px;
 	padding-top:15px;
 	.container{
 		margin:auto;
@@ -114,6 +114,52 @@ html,body{
 				width: 330px;
 			}
 		}
+	}
+}
+
+/** This is for the black/white to color fade **/
+.fadeContainer{
+	position:relative;
+}
+
+.fadeContainer img {
+	position:absolute;
+	-webkit-transition: opacity .5s ease-in-out;
+	-moz-transition: opacity .5s ease-in-out;
+	-o-transition: opacity .5s ease-in-out;
+	transition: opacity .5s ease-in-out;
+}
+
+.fadeContainer img.top:hover {
+	opacity:0;
+}
+/** end of fade css **/
+
+/** this is for the hamburger menu **/
+@media (max-width: 991px){
+	.navigation-container{
+		width:auto;
+	}
+	.brandItem{
+		width:50%;
+	}
+	.navbar-nav>li {
+		float:left !important;
+	}
+}
+/** / End of Hamburger Menu **/
+
+.navbar-brand{
+	margin-top:30px;
+}
+.brandItem>a>.fadeContainer{
+	width:106px;
+	height: 36px;
+}
+
+@media (min-width:992px){
+	.brandItem{
+		margin-top:20px;
 	}
 }
 
