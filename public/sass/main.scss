@@ -82,6 +82,8 @@ $heading-border: #eaeaea;
 
 @import "./../js/vendor/bootstrap-sass-official/vendor/assets/stylesheets/bootstrap.scss";
 
+
+
 .btn-flat-success{
 	@include flat_success_button();
 }
@@ -101,10 +103,32 @@ html,body{
 	padding: 0 0 200px;
 }
 
+.main-nav {
+	padding-top:0px;
+	border-top:0px;
+	border-left:0px;
+	border-right:0px;
+}
+
+.topnav {
+	background-color: #5f8097;
+	text-align:right;
+	padding:10px;
+	padding-right:7%;
+	color: #ffffff;
+	font-weight: bold;
+		a {
+			color: #ffffff;
+		}
+		.navitem{
+			padding-right:10px;
+			padding-left:10px;
+		}
+}
+
 .navbar{
 	margin-bottom:0;
-	min-height:100px;
-	padding-top:15px;
+	min-height:165px;
 	.container{
 		margin:auto;
 
@@ -114,6 +138,62 @@ html,body{
 				width: 330px;
 			}
 		}
+	}
+}
+
+.btn-primary{
+	background-color: #5f8097;
+	border-color:#5f8097;
+}
+
+.btn-primary:hover{
+		background-color: #789eba;
+		border-color:#789eba;
+}
+
+/** This is for the black/white to color fade **/
+.fadeContainer{
+	position:relative;
+}
+
+.fadeContainer img {
+	position:absolute;
+	-webkit-transition: opacity .5s ease-in-out;
+	-moz-transition: opacity .5s ease-in-out;
+	-o-transition: opacity .5s ease-in-out;
+	transition: opacity .5s ease-in-out;
+}
+
+.fadeContainer img.top:hover {
+	opacity:0;
+}
+/** end of fade css **/
+
+/** this is for the hamburger menu **/
+@media (max-width: 991px){
+	.navigation-container{
+		width:auto;
+	}
+	.brandItem{
+		width:50%;
+	}
+	.navbar-nav>li {
+		float:left !important;
+	}
+}
+/** / End of Hamburger Menu **/
+
+.navbar-brand{
+	margin-top:30px;
+}
+.brandItem>a>.fadeContainer{
+	width:106px;
+	height: 36px;
+}
+
+@media (min-width:992px){
+	.brandItem{
+		margin-top:20px;
 	}
 }
 

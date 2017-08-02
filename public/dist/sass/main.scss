@@ -82,6 +82,11 @@ $heading-border: #eaeaea;
 
 @import "./../js/vendor/bootstrap-sass-official/vendor/assets/stylesheets/bootstrap.scss";
 
+.btn-primary{
+	background-color: #5f8097 !important;
+	border-color:#5f8097 !important;
+}
+
 .btn-flat-success{
 	@include flat_success_button();
 }

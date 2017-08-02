@@ -21,7 +21,7 @@ module.exports = function(grunt){
 		},
 		uglify:{
 			options:{
-				banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> - <%= pkg.author %> */\n'
+				banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
 			},
 			build:{
 				files:(function(){
@@ -53,7 +53,7 @@ module.exports = function(grunt){
 				options: {
 					sassDir: '<%= appDir %>/sass',
 					cssDir: '<%= appDir %>/css',
-					banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> - <%= pkg.author %> */\n',
+					banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n',
 					specify: '<%= appDir %>/sass/*.scss',
 					imagesDir: 'public/imgs',
 					fontsDir: 'public/fonts',
@@ -66,7 +66,7 @@ module.exports = function(grunt){
 				options: {
 					sassDir: '<%= appDir %>/sass',
 					cssDir: '<%= appDir %>/css',
-					banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> - <%= pkg.author %> */\n',
+					banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n',
 					specify: '<%= appDir %>/sass/*.scss',
 					imagesDir: 'public/imgs',
 					fontsDir: 'public/fonts',
