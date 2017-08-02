@@ -82,6 +82,8 @@ $heading-border: #eaeaea;
 
 @import "./../js/vendor/bootstrap-sass-official/vendor/assets/stylesheets/bootstrap.scss";
 
+
+
 .btn-flat-success{
 	@include flat_success_button();
 }
@@ -101,10 +103,32 @@ html,body{
 	padding: 0 0 200px;
 }
 
+.main-nav {
+	padding-top:0px;
+	border-top:0px;
+	border-left:0px;
+	border-right:0px;
+}
+
+.topnav {
+	background-color: #5f8097;
+	text-align:right;
+	padding:10px;
+	padding-right:7%;
+	color: #ffffff;
+	font-weight: bold;
+		a {
+			color: #ffffff;
+		}
+		.navitem{
+			padding-right:10px;
+			padding-left:10px;
+		}
+}
+
 .navbar{
 	margin-bottom:0;
-	min-height:150px;
-	padding-top:15px;
+	min-height:165px;
 	.container{
 		margin:auto;
 
@@ -115,6 +139,16 @@ html,body{
 			}
 		}
 	}
+}
+
+.btn-primary{
+	background-color: #5f8097;
+	border-color:#5f8097;
+}
+
+.btn-primary:hover{
+		background-color: #789eba;
+		border-color:#789eba;
 }
 
 /** This is for the black/white to color fade **/
