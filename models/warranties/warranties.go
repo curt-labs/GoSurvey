@@ -1,12 +1,12 @@
 package warranties
 
 import (
-	"database/sql"
 	"errors"
+	"time"
+
 	"github.com/curt-labs/GoSurvey/helpers/database"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/martini-contrib/binding"
-	"time"
 )
 
 var (
@@ -35,14 +35,12 @@ func All() ([]Warranty, error) {
 	ws := make([]Warranty, 0)
 	var err error
 
-	db, err := sql.Open("mysql", database.ConnectionString())
+	err = database.Init()
 	if err != nil {
 		return ws, err
 	}
 
-	defer db.Close()
-
-	stmt, err := db.Prepare(getAllWarranties)
+	stmt, err := database.DB.Prepare(getAllWarranties)
 	if err != nil {
 		return ws, err
 	}
@@ -68,14 +66,12 @@ func All() ([]Warranty, error) {
 // Get returns a warranty based off
 // the supplied ID.
 func (w *Warranty) Get() error {
-	db, err := sql.Open("mysql", database.ConnectionString())
+	err := database.Init()
 	if err != nil {
 		return err
 	}
 
-	defer db.Close()
-
-	stmt, err := db.Prepare(getWarranty)
+	stmt, err := database.DB.Prepare(getWarranty)
 	if err != nil {
 		return err
 	}
@@ -105,13 +101,12 @@ func (w *Warranty) Add() error {
 		return errors.New("invalid email address")
 	}
 
-	db, err := sql.Open("mysql", database.ConnectionString())
+	err := database.Init()
 	if err != nil {
 		return err
 	}
-	defer db.Close()
 
-	check, err := db.Prepare(checkPartNumber)
+	check, err := database.DB.Prepare(checkPartNumber)
 	if err != nil {
 		return err
 	}
@@ -125,7 +120,7 @@ func (w *Warranty) Add() error {
 		return errors.New("invalid part number")
 	}
 
-	stmt, err := db.Prepare(addWarranty)
+	stmt, err := database.DB.Prepare(addWarranty)
 	if err != nil {
 		return err
 	}
@@ -148,14 +143,12 @@ func (w *Warranty) Add() error {
 }
 
 func (w *Warranty) Delete() error {
-	db, err := sql.Open("mysql", database.ConnectionString())
+	err := database.Init()
 	if err != nil {
 		return err
 	}
 
-	defer db.Close()
-
-	stmt, err := db.Prepare(deleteWarranty)
+	stmt, err := database.DB.Prepare(deleteWarranty)
 	if err != nil {
 		return err
 	}

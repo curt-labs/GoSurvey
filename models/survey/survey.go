@@ -1,11 +1,11 @@
 package survey
 
 import (
-	"database/sql"
 	"errors"
+	"time"
+
 	"github.com/curt-labs/GoSurvey/helpers/database"
 	_ "github.com/go-sql-driver/mysql"
-	"time"
 )
 
 var (
@@ -83,13 +83,12 @@ func GetSurveys(skip, take int) ([]Survey, error) {
 	svs := make([]Survey, 0)
 	var err error
 
-	db, err := sql.Open("mysql", database.ConnectionString())
+	err = database.Init()
 	if err != nil {
 		return svs, err
 	}
-	defer db.Close()
 
-	stmt, err := db.Prepare(getAllSurveys)
+	stmt, err := database.DB.Prepare(getAllSurveys)
 	if err != nil {
 		return svs, err
 	}
@@ -119,14 +118,12 @@ func GetSurveys(skip, take int) ([]Survey, error) {
 func SurveyCount() int {
 	var err error
 
-	db, err := sql.Open("mysql", database.ConnectionString())
+	err = database.Init()
 	if err != nil {
 		return 0
 	}
 
-	defer db.Close()
-
-	stmt, err := db.Prepare(getSurveyCount)
+	stmt, err := database.DB.Prepare(getSurveyCount)
 	if err != nil {
 		return 0
 	}
@@ -144,14 +141,12 @@ func SurveyCount() int {
 func (s *Survey) Get() error {
 	var err error
 
-	db, err := sql.Open("mysql", database.ConnectionString())
+	err = database.Init()
 	if err != nil {
 		return err
 	}
 
-	defer db.Close()
-
-	stmt, err := db.Prepare(getSurvey)
+	stmt, err := database.DB.Prepare(getSurvey)
 	if err != nil {
 		return err
 	}
@@ -176,14 +171,12 @@ func (s *Survey) Get() error {
 func (s *Survey) revisions() error {
 	var err error
 
-	db, err := sql.Open("mysql", database.ConnectionString())
+	err = database.Init()
 	if err != nil {
 		return err
 	}
 
-	defer db.Close()
-
-	stmt, err := db.Prepare(getSurveyRevisions)
+	stmt, err := database.DB.Prepare(getSurveyRevisions)
 	if err != nil {
 		return err
 	}
@@ -228,13 +221,12 @@ func (s *Survey) Save() error {
 
 // insert will insert a new survey record.
 func (s *Survey) insert() error {
-	db, err := sql.Open("mysql", database.ConnectionString())
+	err := database.Init()
 	if err != nil {
 		return err
 	}
-	defer db.Close()
 
-	stmt, err := db.Prepare(insertSurvey)
+	stmt, err := database.DB.Prepare(insertSurvey)
 	if err != nil {
 		return err
 	}
@@ -258,13 +250,12 @@ func (s *Survey) insert() error {
 // update will update an existing survey
 // record.
 func (s *Survey) update() error {
-	db, err := sql.Open("mysql", database.ConnectionString())
+	err := database.Init()
 	if err != nil {
 		return err
 	}
-	defer db.Close()
 
-	stmt, err := db.Prepare(updateSurvey)
+	stmt, err := database.DB.Prepare(updateSurvey)
 	if err != nil {
 		return err
 	}
@@ -282,13 +273,12 @@ func (s *Survey) Delete() error {
 		return errors.New("invalid survey record")
 	}
 
-	db, err := sql.Open("mysql", database.ConnectionString())
+	err := database.Init()
 	if err != nil {
 		return err
 	}
-	defer db.Close()
 
-	stmt, err := db.Prepare(deleteSurvey)
+	stmt, err := database.DB.Prepare(deleteSurvey)
 	if err != nil {
 		return err
 	}

@@ -1,7 +1,6 @@
 package survey
 
 import (
-	"database/sql"
 	"errors"
 	"time"
 
@@ -98,12 +97,12 @@ func (q *Question) Delete() error {
 		return errors.New("cannot delete a question that doesn't exist")
 	}
 
-	db, err := sql.Open("mysql", database.ConnectionString())
+	err := database.Init()
 	if err != nil {
 		return err
 	}
 
-	stmt, err := db.Prepare(deleteQuestion)
+	stmt, err := database.DB.Prepare(deleteQuestion)
 	if err != nil {
 		return err
 	}
@@ -116,12 +115,12 @@ func (q *Question) Delete() error {
 // to the given Survey.
 func (q *Question) insert(surveyID int) error {
 
-	db, err := sql.Open("mysql", database.ConnectionString())
+	err := database.Init()
 	if err != nil {
 		return err
 	}
 
-	stmt, err := db.Prepare(insertQuestion)
+	stmt, err := database.DB.Prepare(insertQuestion)
 	if err != nil {
 		return err
 	}
@@ -144,12 +143,12 @@ func (q *Question) insert(surveyID int) error {
 // update will update the question, userID, and surveyID
 // properties for the given Question.
 func (q *Question) update(surveyID int) error {
-	db, err := sql.Open("mysql", database.ConnectionString())
+	err := database.Init()
 	if err != nil {
 		return err
 	}
 
-	stmt, err := db.Prepare(updateQuestion)
+	stmt, err := database.DB.Prepare(updateQuestion)
 	if err != nil {
 		return err
 	}
@@ -170,13 +169,12 @@ func (s *Survey) questions() error {
 	s.Questions = make([]Question, 0)
 	var err error
 
-	db, err := sql.Open("mysql", database.ConnectionString())
+	err = database.Init()
 	if err != nil {
 		return err
 	}
-	defer db.Close()
 
-	stmt, err := db.Prepare(getSurveyQuestions)
+	stmt, err := database.DB.Prepare(getSurveyQuestions)
 	if err != nil {
 		return err
 	}
@@ -210,13 +208,12 @@ func (q *Question) GetRevisions() error {
 func (q *Question) revisions() error {
 	var err error
 
-	db, err := sql.Open("mysql", database.ConnectionString())
+	err = database.Init()
 	if err != nil {
 		return err
 	}
-	defer db.Close()
 
-	stmt, err := db.Prepare(getQuestionRevisions)
+	stmt, err := database.DB.Prepare(getQuestionRevisions)
 	if err != nil {
 		return err
 	}

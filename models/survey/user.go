@@ -79,17 +79,16 @@ func GetAllSubmissions(skip, take, surveyID int) ([]SurveySubmission, error) {
 	submissions := make([]SurveySubmission, 0)
 	var err error
 
-	db, err := sql.Open("mysql", database.ConnectionString())
+	err = database.Init()
 	if err != nil {
 		return submissions, err
 	}
-	defer db.Close()
 
 	var stmt *sql.Stmt
 	if surveyID == 0 {
-		stmt, err = db.Prepare(getAllSubmissions)
+		stmt, err = database.DB.Prepare(getAllSubmissions)
 	} else {
-		stmt, err = db.Prepare(getAllSubmissionsBySurvey)
+		stmt, err = database.DB.Prepare(getAllSubmissionsBySurvey)
 	}
 
 	if err != nil {
@@ -144,18 +143,16 @@ func GetAllSubmissions(skip, take, surveyID int) ([]SurveySubmission, error) {
 func SubmissionCount(surveyID int) int {
 	var err error
 
-	db, err := sql.Open("mysql", database.ConnectionString())
+	err = database.Init()
 	if err != nil {
 		return 0
 	}
 
-	defer db.Close()
-
 	var stmt *sql.Stmt
 	if surveyID == 0 {
-		stmt, err = db.Prepare(getSubmissionCount)
+		stmt, err = database.DB.Prepare(getSubmissionCount)
 	} else {
-		stmt, err = db.Prepare(getSubmissionCountBySurvey)
+		stmt, err = database.DB.Prepare(getSubmissionCountBySurvey)
 	}
 
 	if err != nil {
@@ -178,13 +175,12 @@ func (s *SurveySubmission) Get() error {
 
 	var err error
 
-	db, err := sql.Open("mysql", database.ConnectionString())
+	err = database.Init()
 	if err != nil {
 		return err
 	}
-	defer db.Close()
 
-	stmt, err := db.Prepare(getSubmission)
+	stmt, err := database.DB.Prepare(getSubmission)
 	if err != nil {
 		return err
 	}
@@ -260,13 +256,12 @@ func (s *SurveyUser) save() error {
 		return errors.New("e-mail name cannot be blank")
 	}
 
-	db, err := sql.Open("mysql", database.ConnectionString())
+	err := database.Init()
 	if err != nil {
 		return err
 	}
-	defer db.Close()
 
-	stmt, err := db.Prepare(insertUser)
+	stmt, err := database.DB.Prepare(insertUser)
 	if err != nil {
 		return err
 	}
@@ -301,13 +296,12 @@ func (s *SurveySubmissionAnswer) save(userID, surveyID int) error {
 		return errors.New("failed to assign survey")
 	}
 
-	db, err := sql.Open("mysql", database.ConnectionString())
+	err := database.Init()
 	if err != nil {
 		return err
 	}
-	defer db.Close()
 
-	stmt, err := db.Prepare(insertUserAnswer)
+	stmt, err := database.DB.Prepare(insertUserAnswer)
 	if err != nil {
 		return err
 	}
@@ -318,13 +312,12 @@ func (s *SurveySubmissionAnswer) save(userID, surveyID int) error {
 }
 
 func (s *SurveyUser) delete() error {
-	db, err := sql.Open("mysql", database.ConnectionString())
+	err := database.Init()
 	if err != nil {
 		return err
 	}
-	defer db.Close()
 
-	stmt, err := db.Prepare(deleteUser)
+	stmt, err := database.DB.Prepare(deleteUser)
 	if err != nil {
 		return err
 	}

@@ -1,16 +1,16 @@
 package prize
 
 import (
-	"database/sql"
 	"errors"
 	"fmt"
-	"github.com/curt-labs/GoSurvey/helpers/database"
-	"github.com/curt-labs/GoSurvey/models/survey"
-	_ "github.com/go-sql-driver/mysql"
 	"math/rand"
 	"net/http"
 	"net/url"
 	"time"
+
+	"github.com/curt-labs/GoSurvey/helpers/database"
+	"github.com/curt-labs/GoSurvey/models/survey"
+	_ "github.com/go-sql-driver/mysql"
 )
 
 var (
@@ -102,13 +102,12 @@ func All(skip, take int) ([]Prize, error) {
 	var prizes []Prize
 	var err error
 
-	db, err := sql.Open("mysql", database.ConnectionString())
+	err = database.Init()
 	if err != nil {
 		return prizes, err
 	}
-	defer db.Close()
 
-	stmt, err := db.Prepare(allPrizes)
+	stmt, err := database.DB.Prepare(allPrizes)
 	if err != nil {
 		return prizes, err
 	}
@@ -140,14 +139,12 @@ func All(skip, take int) ([]Prize, error) {
 func PrizeCount() int {
 	var err error
 
-	db, err := sql.Open("mysql", database.ConnectionString())
+	err = database.Init()
 	if err != nil {
 		return 0
 	}
 
-	defer db.Close()
-
-	stmt, err := db.Prepare(getPrizeCount)
+	stmt, err := database.DB.Prepare(getPrizeCount)
 	if err != nil {
 		return 0
 	}
@@ -164,13 +161,12 @@ func Current() (Prize, error) {
 	var p Prize
 	var err error
 
-	db, err := sql.Open("mysql", database.ConnectionString())
+	err = database.Init()
 	if err != nil {
 		return p, err
 	}
-	defer db.Close()
 
-	stmt, err := db.Prepare(getCurrentPrize)
+	stmt, err := database.DB.Prepare(getCurrentPrize)
 	if err != nil {
 		return p, err
 	}
@@ -195,13 +191,12 @@ func (p *Prize) Get() error {
 
 	var err error
 
-	db, err := sql.Open("mysql", database.ConnectionString())
+	err = database.Init()
 	if err != nil {
 		return err
 	}
-	defer db.Close()
 
-	stmt, err := db.Prepare(getPrize)
+	stmt, err := database.DB.Prepare(getPrize)
 	if err != nil {
 		return err
 	}
@@ -243,13 +238,12 @@ func (p *Prize) PickWinner(start, end time.Time) (survey.SurveyUser, error) {
 		return user, errors.New("no surveys completed in the given date range")
 	}
 
-	db, err := sql.Open("mysql", database.ConnectionString())
+	err = database.Init()
 	if err != nil {
 		return user, err
 	}
-	defer db.Close()
 
-	stmt, err := db.Prepare(setWinner)
+	stmt, err := database.DB.Prepare(setWinner)
 	if err != nil {
 		return user, err
 	}
@@ -263,13 +257,12 @@ func users(start, end time.Time) ([]survey.SurveyUser, error) {
 	var users []survey.SurveyUser
 	var err error
 
-	db, err := sql.Open("mysql", database.ConnectionString())
+	err = database.Init()
 	if err != nil {
 		return users, err
 	}
-	defer db.Close()
 
-	stmt, err := db.Prepare(getCurrentUsers)
+	stmt, err := database.DB.Prepare(getCurrentUsers)
 	if err != nil {
 		return users, err
 	}
@@ -327,13 +320,12 @@ func (p *Prize) Delete() error {
 		return errors.New("invalid prize record")
 	}
 
-	db, err := sql.Open("mysql", database.ConnectionString())
+	err := database.Init()
 	if err != nil {
 		return err
 	}
-	defer db.Close()
 
-	stmt, err := db.Prepare(deletePrize)
+	stmt, err := database.DB.Prepare(deletePrize)
 	if err != nil {
 		return err
 	}
@@ -348,13 +340,12 @@ func (p *Prize) Delete() error {
 }
 
 func (p *Prize) insert() error {
-	db, err := sql.Open("mysql", database.ConnectionString())
+	err := database.Init()
 	if err != nil {
 		return err
 	}
-	defer db.Close()
 
-	stmt, err := db.Prepare(insertPrize)
+	stmt, err := database.DB.Prepare(insertPrize)
 	if err != nil {
 		return err
 	}
@@ -376,13 +367,12 @@ func (p *Prize) insert() error {
 }
 
 func (p *Prize) update() error {
-	db, err := sql.Open("mysql", database.ConnectionString())
+	err := database.Init()
 	if err != nil {
 		return err
 	}
-	defer db.Close()
 
-	stmt, err := db.Prepare(updatePrize)
+	stmt, err := database.DB.Prepare(updatePrize)
 	if err != nil {
 		return err
 	}
@@ -396,14 +386,12 @@ func (p *Prize) update() error {
 func (p *Prize) revisions() error {
 	var err error
 
-	db, err := sql.Open("mysql", database.ConnectionString())
+	err = database.Init()
 	if err != nil {
 		return err
 	}
 
-	defer db.Close()
-
-	stmt, err := db.Prepare(getPrizeRevisions)
+	stmt, err := database.DB.Prepare(getPrizeRevisions)
 	if err != nil {
 		return err
 	}
