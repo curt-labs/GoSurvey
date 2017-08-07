@@ -22,6 +22,7 @@ func Init() error {
 		} else {
 			cfg := mysql.Cfg(os.Getenv("DATABASE_INSTANCE"), os.Getenv("DATABASE_USERNAME"), os.Getenv("DATABASE_PASSWORD"))
 			cfg.DBName = os.Getenv("CURT_DEV_NAME")
+			cfg.ParseTime = true
 			DB, err = mysql.DialCfg(cfg)
 		}
 		if err != nil {
