@@ -1,11 +1,11 @@
 package survey
 
 import (
-	"database/sql"
 	"errors"
+	"time"
+
 	"github.com/curt-labs/GoSurvey/helpers/database"
 	_ "github.com/go-sql-driver/mysql"
-	"time"
 )
 
 // SQL Statements
@@ -92,13 +92,12 @@ func (q *Question) answers() error {
 	q.Answers = make([]Answer, 0)
 	var err error
 
-	db, err := sql.Open("mysql", database.ConnectionString())
+	err = database.Init()
 	if err != nil {
 		return err
 	}
-	defer db.Close()
 
-	stmt, err := db.Prepare(getQuestionAnswers)
+	stmt, err := database.DB.Prepare(getQuestionAnswers)
 	if err != nil {
 		return err
 	}
@@ -128,12 +127,12 @@ func (a *Answer) insert(questionID int) error {
 		return errors.New("invalid question reference")
 	}
 
-	db, err := sql.Open("mysql", database.ConnectionString())
+	err := database.Init()
 	if err != nil {
 		return err
 	}
 
-	stmt, err := db.Prepare(insertAnswer)
+	stmt, err := database.DB.Prepare(insertAnswer)
 	if err != nil {
 		return err
 	}
@@ -156,12 +155,12 @@ func (a *Answer) insert(questionID int) error {
 // udpate will update the answer, data_type, userID,
 // and questionID properties for the given Answer.
 func (a *Answer) update(questionID int) error {
-	db, err := sql.Open("mysql", database.ConnectionString())
+	err := database.Init()
 	if err != nil {
 		return err
 	}
 
-	stmt, err := db.Prepare(updateAnswer)
+	stmt, err := database.DB.Prepare(updateAnswer)
 	if err != nil {
 		return err
 	}
@@ -174,12 +173,12 @@ func (a *Answer) update(questionID int) error {
 // Delete will mark the referenced Answer
 // as deleted.
 func (a *Answer) Delete() error {
-	db, err := sql.Open("mysql", database.ConnectionString())
+	err := database.Init()
 	if err != nil {
 		return err
 	}
 
-	stmt, err := db.Prepare(deleteAnswer)
+	stmt, err := database.DB.Prepare(deleteAnswer)
 	if err != nil {
 		return err
 	}
@@ -194,13 +193,12 @@ func (a *Answer) Delete() error {
 func (a *Answer) revisions() error {
 	var err error
 
-	db, err := sql.Open("mysql", database.ConnectionString())
+	err = database.Init()
 	if err != nil {
 		return err
 	}
-	defer db.Close()
 
-	stmt, err := db.Prepare(getAnswerRevisions)
+	stmt, err := database.DB.Prepare(getAnswerRevisions)
 	if err != nil {
 		return err
 	}
