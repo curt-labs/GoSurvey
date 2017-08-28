@@ -243,15 +243,16 @@ html,body{
 		flex-flow: row wrap;
 		padding:0;
 		li{
-			@include flex(1 250px);
+			@include flex(1 300px);
 			@include order(2);
 			list-style:none;
 			padding:0 10px;
 			position:relative;
+			text-align:center;
 
 			h3{
 				line-height: 1.019em;
-				font-size:1.95em;
+				font-size:1.6em;
 				border-bottom: 2px solid $heading-border;
 			}
 
