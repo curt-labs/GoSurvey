@@ -118,9 +118,9 @@ func Submit(rw http.ResponseWriter, req *http.Request) {
 		</style>
 		`
 		body += "</head><body>"
-		body += "<html><h3>Thank you for filling out your Warranty</h3>"
-		body += "<p><strong>Provided below is a copy of your warranty questionnaire:</strong></p>"
-		body += "<table><tr><th>Queston</th><th>Answer</th></tr>"
+		body += "<html><h3>Thank you for filling out your Product Registration</h3>"
+		body += "<p><strong>Provided below is a copy Product Registration:</strong></p>"
+		body += "<table><tr><th>Question</th><th>Answer</th></tr>"
 		for _, surv := range s.Questions {
 			body += fmt.Sprintf("<tr><td>%s</td><td>%s</td></tr>", surv.Question, surv.Answer)
 		}
