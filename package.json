@@ -5,18 +5,18 @@
   "main": "",
   "dependencies": {},
   "devDependencies": {
-    "requirejs": "~2.1.9",
-    "jshint-stylish": "~0.2.0",
-		"grunt": "~0.4.2",
-		"grunt-contrib-requirejs": "~0.4.4",
-    "grunt-contrib-jshint": "~0.8.0",
-    "grunt-contrib-jasmine": "~0.6.1",
+    "grunt": "~0.4.2",
+    "grunt-concurrent": "~0.4.3",
+    "grunt-contrib-compass": "^0.7.2",
     "grunt-contrib-concat": "~0.3.0",
+    "grunt-contrib-jasmine": "~0.6.1",
+    "grunt-contrib-jshint": "~0.8.0",
+    "grunt-contrib-requirejs": "~0.4.4",
     "grunt-contrib-uglify": "~0.4.0",
     "grunt-contrib-watch": "~0.5.3",
-    "grunt-contrib-compass": "~0.7.2",
     "grunt-shell": "~0.6.4",
-    "grunt-concurrent": "~0.4.3"
+    "jshint-stylish": "~0.2.0",
+    "requirejs": "~2.1.9"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
