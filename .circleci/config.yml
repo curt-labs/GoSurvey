@@ -1,0 +1,269 @@
+version: 2
+jobs:
+  # Build and Test
+  build:
+    working_directory: ~/curt-labs/GoSurvey
+    parallelism: 1
+    environment:
+      CIRCLE_TEST_REPORTS: /tmp/circleci-test-results
+      CIRCLE_ARTIFACTS: /tmp/circleci-artifacts
+    docker:
+    - image: circleci/golang
+    steps:
+    - checkout
+    - run:
+        name: Create Artifact and Test Result Placeholders
+        command: mkdir -p ${CIRCLE_ARTIFACTS} ${CIRCLE_TEST_REPORTS}
+    # Dependencies
+    #   This would typically go in either a build or a build-and-test job when using workflows
+    # Restore the dependency cache
+    #   (Fix dependency folder permissions)
+    - run: sudo chown -R circleci /go/src
+    - restore_cache:
+        keys:
+        # This branch if available
+        - v1-dep-{{ .Branch }}-
+        # Default branch if not
+        - v1-dep-master-
+        # Any branch if there are none on the default branch - this should be unnecessary if you have your default branch configured correctly
+        - v1-dep-
+    - run:
+        name: Get Dependencies
+        command: go get -t -d -v ./...
+    - run:
+        name: Build
+        command: go build -v
+    # Test
+    - run:
+        name: Vet the Build
+        command: |
+          echo 'export CIRCLE_TEST_REPORTS="$CIRCLE_TEST_REPORTS"' >> $BASH_ENV
+          echo 'export DOCKER_IMAGE="$DOCKER_IMAGE"' >> $BASH_ENV
+          echo 'export CIRCLE_ARTIFACTS="$CIRCLE_ARTIFACTS"' >> $BASH_ENV
+          go vet -v &> $CIRCLE_TEST_REPORTS/$DOCKER_IMAGE-test-results.txt
+    # Save dependency cache
+    - save_cache:
+        key: v2-dep-{{ .Branch }}-{{ epoch }}
+        paths:
+        # This is a broad list of cache paths to include many possible development environments
+        # You can probably delete some of these entries
+        - /go/src
+        - vendor/bundle
+        - ~/virtualenvs
+        - ~/.m2
+        - ~/.ivy2
+        - ~/.bundle
+        - ~/.go_workspace
+        - ~/.gradle
+        - ~/.cache/bower
+    # Save test results
+    - store_test_results:
+        path: /tmp/circleci-test-results
+    # Save artifacts
+    - store_artifacts:
+        path: /tmp/circleci-artifacts
+    - store_artifacts:
+        path: /tmp/circleci-test-results
+
+  # Deploy to Staging
+  deploy-staging:
+    working_directory: ~/curt-labs/GoSurvey
+    parallelism: 1
+    environment:
+      CIRCLE_TEST_REPORTS: /tmp/circleci-test-results
+      CIRCLE_ARTIFACTS: /tmp/circleci-artifacts
+      DOCKER_IMAGE_NAME: survey
+      STAGE_PROJECT_NAME: unicorn-attack
+      STAGE_CLUSTER_NAME: staging-1
+      STAGE_ZONE: us-central1-f
+    docker:
+    - image: circleci/golang
+    - image: google/cloud-sdk
+    steps:
+    - setup_remote_docker:
+        docker_layer_caching: true
+    - checkout
+    # Restore the dependency cache
+    #   (Fix dependency folder permissions)
+    - run: sudo chown -R circleci /go/src
+    - restore_cache:
+        keys:
+        # This branch if available
+        - v1-dep-{{ .Branch }}-
+        # Default branch if not
+        - v1-dep-master-
+        # Any branch if there are none on the default branch - this should be unnecessary if you have your default branch configured correctly
+        - v1-dep-
+    - run:
+        name: Get Dependencies
+        command: go get -t -d -v ./...
+    - run:
+        name: Build
+        command: go build -v
+    # Update tools
+    # Add the Cloud SDK distribution URI as a package source
+    - run: echo "deb http://packages.cloud.google.com/apt cloud-sdk-jessie main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+    # Import the Google Cloud Platform public key
+    - run: curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+    # Update the package list and install the Cloud SDK
+    - run: sudo apt-get update && sudo apt-get install google-cloud-sdk kubectl
+    # Setup ENV Variables and Service Account
+    - run: echo 'export DEPLOYMENT_REVISION=$CIRCLE_BUILD_NUM' >> $BASH_ENV
+    - run: gcloud version
+
+    - run: echo $STAGE_CLIENT_SECRET | base64 --decode -i > ${HOME}/stage-client-secret.json
+    - run: docker build -t us.gcr.io/${STAGE_PROJECT_NAME}/${DOCKER_IMAGE_NAME}:$CIRCLE_SHA1 .
+    - run: docker tag us.gcr.io/${STAGE_PROJECT_NAME}/${DOCKER_IMAGE_NAME}:$CIRCLE_SHA1 us.gcr.io/${STAGE_PROJECT_NAME}/${DOCKER_IMAGE_NAME}:latest
+    - run: gcloud config set container/use_client_certificate True
+    - run: gcloud auth activate-service-account --key-file ${HOME}/stage-client-secret.json
+    - run: gcloud config set project $STAGE_PROJECT_NAME
+    - run: gcloud --quiet config set container/cluster $STAGE_CLUSTER_NAME
+    - run: gcloud config set compute/zone $STAGE_ZONE
+    - run: gcloud --quiet container clusters get-credentials $STAGE_CLUSTER_NAME
+    - run: gcloud docker --authorize-only
+    - run: docker push us.gcr.io/${STAGE_PROJECT_NAME}/${DOCKER_IMAGE_NAME}
+    - run: kubectl set image deployment/survey survey=us.gcr.io/${STAGE_PROJECT_NAME}/${DOCKER_IMAGE_NAME}:$CIRCLE_SHA1
+    # Save dependency cache
+    - save_cache:
+        key: v2-dep-{{ .Branch }}-{{ epoch }}
+        paths:
+        - /go/src
+        - vendor/bundle
+        - "/go/pkg"
+        - ~/virtualenvs
+        - ~/.m2
+        - ~/.ivy2
+        - ~/.bundle
+        - ~/.go_workspace
+        - ~/.gradle
+        - ~/.cache/bower
+    # Save test results
+    - store_test_results:
+        path: /tmp/circleci-test-results
+    # Save artifacts
+    - store_artifacts:
+        path: /tmp/circleci-artifacts
+    - store_artifacts:
+        path: /tmp/circleci-test-results
+
+
+  # Deploy to Production
+  deploy-production:
+    working_directory: ~/curt-labs/GoSurvey
+    parallelism: 1
+    environment:
+      CIRCLE_TEST_REPORTS: /tmp/circleci-test-results
+      CIRCLE_ARTIFACTS: /tmp/circleci-artifacts
+      DOCKER_IMAGE_NAME: survey
+      PROD_PROJECT_NAME: curt-applications
+      PROD_CLUSTER_NAME: applications
+      PROD_ZONE: us-central1-a
+    docker:
+    - image: circleci/golang
+    - image: google/cloud-sdk
+    steps:
+    - setup_remote_docker:
+        docker_layer_caching: true
+    - checkout
+    # Restore the dependency cache
+    #   (Fix dependency folder permissions)
+    - run: sudo chown -R circleci /go/src
+    - restore_cache:
+        keys:
+        # This branch if available
+        - v1-dep-{{ .Branch }}-
+        # Default branch if not
+        - v1-dep-master-
+        # Any branch if there are none on the default branch - this should be unnecessary if you have your default branch configured correctly
+        - v1-dep-
+    - run:
+        name: Get Dependencies
+        command: go get -t -d -v ./...
+    - run:
+        name: Build
+        command: go build -v
+    # Update tools
+    # Add the Cloud SDK distribution URI as a package source
+    - run: echo "deb http://packages.cloud.google.com/apt cloud-sdk-jessie main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+    # Import the Google Cloud Platform public key
+    - run: curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+    # Update the package list and install the Cloud SDK
+    - run: sudo apt-get update && sudo apt-get install google-cloud-sdk kubectl
+    # Setup ENV Variables and Service Account
+    - run: echo 'export DEPLOYMENT_REVISION=$CIRCLE_BUILD_NUM' >> $BASH_ENV
+    - run: gcloud version
+
+    - run: echo $PROD_CLIENT_SECRET | base64 --decode -i > ${HOME}/prod-client-secret.json
+
+    - run: docker build -t us.gcr.io/${PROD_PROJECT_NAME}/${DOCKER_IMAGE_NAME}:$CIRCLE_SHA1 .
+    - run: docker tag us.gcr.io/${PROD_PROJECT_NAME}/${DOCKER_IMAGE_NAME}:$CIRCLE_SHA1 us.gcr.io/${PROD_PROJECT_NAME}/${DOCKER_IMAGE_NAME}:latest
+    - run: gcloud config set container/use_client_certificate True
+    - run: gcloud auth activate-service-account --key-file ${HOME}/prod-client-secret.json
+    - run: gcloud config set project $PROD_PROJECT_NAME
+    - run: gcloud --quiet config set container/cluster $PROD_CLUSTER_NAME
+    - run: gcloud config set compute/zone $PROD_ZONE
+    - run: gcloud --quiet container clusters get-credentials $PROD_CLUSTER_NAME
+    - run: gcloud docker --authorize-only
+    - run: docker push us.gcr.io/${PROD_PROJECT_NAME}/${DOCKER_IMAGE_NAME}
+    - run: kubectl set image deployment/survey survey=us.gcr.io/${PROD_PROJECT_NAME}/${DOCKER_IMAGE_NAME}:$CIRCLE_SHA1
+    # Save dependency cache
+    - save_cache:
+        key: v2-dep-{{ .Branch }}-{{ epoch }}
+        paths:
+        - /go/src
+        - vendor/bundle
+        - "/go/pkg"
+        - ~/virtualenvs
+        - ~/.m2
+        - ~/.ivy2
+        - ~/.bundle
+        - ~/.go_workspace
+        - ~/.gradle
+        - ~/.cache/bower
+    # Save test results
+    - store_test_results:
+        path: /tmp/circleci-test-results
+    # Save artifacts
+    - store_artifacts:
+        path: /tmp/circleci-artifacts
+    - store_artifacts:
+        path: /tmp/circleci-test-results
+
+workflows:
+  version: 2
+  build-only:
+    jobs:
+    - build:
+        filters:
+          branches:
+            ignore:
+            - master
+            - staging
+  deploy-staging-workflow:
+    jobs:
+    - build:
+        filters:
+          branches:
+            only:
+            - staging
+    - deploy-staging:
+        requires:
+        - build
+        filters:
+          branches:
+            only:
+            - staging
+  deploy-production-workflow:
+    jobs:
+    - build:
+        filters:
+          branches:
+            only:
+            - master
+    - deploy-production:
+        requires:
+          - build
+        filters:
+          branches:
+            only:
+            - master
