@@ -120,7 +120,7 @@ jobs:
     - run: gcloud --quiet container clusters get-credentials $STAGE_CLUSTER_NAME
     - run: gcloud docker --authorize-only
     - run: docker push us.gcr.io/${STAGE_PROJECT_NAME}/${DOCKER_IMAGE_NAME}
-    - run: kubectl set image deployment/survey survey=us.gcr.io/${STAGE_PROJECT_NAME}/${DOCKER_IMAGE_NAME}:$CIRCLE_SHA1
+    - run: kubectl set image deployment/survey admin=us.gcr.io/${STAGE_PROJECT_NAME}/${DOCKER_IMAGE_NAME}:$CIRCLE_SHA1
     # Save dependency cache
     - save_cache:
         key: v2-dep-{{ .Branch }}-{{ epoch }}
@@ -206,7 +206,7 @@ jobs:
     - run: gcloud --quiet container clusters get-credentials $PROD_CLUSTER_NAME
     - run: gcloud docker --authorize-only
     - run: docker push us.gcr.io/${PROD_PROJECT_NAME}/${DOCKER_IMAGE_NAME}
-    - run: kubectl set image deployment/survey survey=us.gcr.io/${PROD_PROJECT_NAME}/${DOCKER_IMAGE_NAME}:$CIRCLE_SHA1
+    - run: kubectl set image deployment/survey admin=us.gcr.io/${PROD_PROJECT_NAME}/${DOCKER_IMAGE_NAME}:$CIRCLE_SHA1
     # Save dependency cache
     - save_cache:
         key: v2-dep-{{ .Branch }}-{{ epoch }}
