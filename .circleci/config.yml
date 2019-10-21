@@ -8,7 +8,7 @@ jobs:
       CIRCLE_TEST_REPORTS: /tmp/circleci-test-results
       CIRCLE_ARTIFACTS: /tmp/circleci-artifacts
     docker:
-    - image: circleci/golang:1.7
+    - image: circleci/golang:1.12
     steps:
     - checkout
     - run:
@@ -80,7 +80,7 @@ jobs:
       STAGE_CLUSTER_NAME: staging-1
       STAGE_ZONE: us-central1-f
     docker:
-    - image: circleci/golang:1.7
+    - image: circleci/golang:1.12
     - image: google/cloud-sdk
     steps:
     - setup_remote_docker:
@@ -165,7 +165,7 @@ jobs:
       PROD_CLUSTER_NAME: applications
       PROD_ZONE: us-central1-a
     docker:
-    - image: circleci/golang:1.7
+    - image: circleci/golang:1.12
     - image: google/cloud-sdk
     steps:
     - setup_remote_docker:
