@@ -8,7 +8,7 @@ jobs:
       CIRCLE_TEST_REPORTS: /tmp/circleci-test-results
       CIRCLE_ARTIFACTS: /tmp/circleci-artifacts
     docker:
-    - image: circleci/golang:1.2
+    - image: circleci/golang:1.7
     steps:
     - checkout
     - run:
