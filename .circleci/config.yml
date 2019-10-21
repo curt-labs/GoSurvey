@@ -36,14 +36,6 @@ jobs:
     - run:
         name: Build
         command: go build -v
-    # Test
-    - run:
-        name: Vet the Build
-        command: |
-          echo 'export CIRCLE_TEST_REPORTS="$CIRCLE_TEST_REPORTS"' >> $BASH_ENV
-          echo 'export DOCKER_IMAGE="$DOCKER_IMAGE"' >> $BASH_ENV
-          echo 'export CIRCLE_ARTIFACTS="$CIRCLE_ARTIFACTS"' >> $BASH_ENV
-          go vet -v &> $CIRCLE_TEST_REPORTS/$DOCKER_IMAGE-test-results.txt
     # Save dependency cache
     - save_cache:
         key: v2-dep-{{ .Branch }}-{{ epoch }}
