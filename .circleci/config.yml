@@ -31,12 +31,12 @@ jobs:
         name: Get Dependencies
         command: go get -t -d -v ./...
     - run:
+        name: Remove Grunt Local Development
+        command: rm /home/circleci/curt-labs/GoSurvey/watcher.go
+    - run:
         name: Build
         command: go build -v
     # Test
-    - run:
-        name: Remove Grunt Local Development
-        command: rm /home/circleci/curt-labs/GoSurvey/watcher.go
     - run:
         name: Vet the Build
         command: |
