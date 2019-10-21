@@ -25,10 +25,11 @@ define([],function(){
 				}
 				survey.questions[i].answers = answers;
 			}
-
+			$scope.surveyid = $routeParams.id;
 			$scope.survey = survey;
 		},function(){
-			$location.path("/surveys");
+			$scope.surveyid = $routeParams.id;
+			// $location.path("/surveys");
 		});
 
 		$scope.submitSurvey = function(){
