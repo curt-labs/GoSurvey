@@ -1,4 +1,4 @@
-FROM golang:1.7
+FROM golang:1.12
 
 RUN mkdir -p /home/deployer/gosrc/src/github.com/curt-labs/GoSurvey
 ADD . /home/deployer/gosrc/src/github.com/curt-labs/GoSurvey
